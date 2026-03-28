@@ -1354,6 +1354,6 @@ Avoid:           MD5, SHA-1                (broken)
 
 ---
 
-> **One last thing:** The best candidates I've hired over 20 years weren't the ones who knew the most facts. They were the ones who could think clearly under pressure, admit what they didn't know, and reason their way to a sensible answer. Walk into that interview calm, be honest, and think out loud. That's what gets you hired.
+> **One last thing:**  Walk into that interview calm, be honest, and think out loud.
 >
 > **Good luck.**
